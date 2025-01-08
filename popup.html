@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en_US">
+
+<head>
+    <title>Excluded Domains</title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/reset.css" />
+    <link rel="stylesheet" href="./css/styles.css" />
+</head>
+
+<body>
+    <div class="page-container">
+        <header>
+            <h1>Excluded Domains</h1>
+        </header>
+        <div id="alertContainer">
+            <span id="alertMessage"></span>
+        </div>
+        <form id="domainForm">
+            <input type="text" id="domainInput" placeholder="www.youtube.com" />
+            <button type="submit">Add Domain</button>
+        </form>
+        <ul id="domainList"></ul>
+
+        <footer class="footer__donation">
+            <a href="https://ko-fi.com/coreboolean" target="_blank" rel="noopener noreferrer">
+                <img id="donation__badge" alt="Ko-fi donation badge with link" src="/ko-fi/kofi_s_tag_dark.png" />
+            </a>
+            <a href="https://ko-fi.com/coreboolean" target="_blank" rel="noopener noreferrer">
+                <img id="qrcode" alt="Ko-fi donation qrcode with link" src="/ko-fi/myqrcode.png" />
+            </a>
+        </footer>
+    </div>
+    <script src="popup.js"></script>
+</body>
+
+</html>

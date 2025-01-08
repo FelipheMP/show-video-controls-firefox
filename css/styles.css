@@ -1,0 +1,132 @@
+:root {
+    --background-color: rgb(10, 12, 14);
+    --title-color: white;
+    --button-color: rgb(23, 26, 27);
+    --input-field-color: var(--button-color);
+    --warning-color: #c2160a;
+    --border-color: rgb(53, 62, 65);
+}
+
+.page-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    /* Ensures the container takes at least full viewport height */
+}
+
+body {
+    color: var(--title-color);
+    font-family: Arial, sans-serif;
+    min-width: 360px;
+    max-width: 428px;
+    min-height: 600px;
+    max-height: 700px;
+    overflow-y: auto;
+    /* Enable scrolling if content exceeds the set size */
+    background-color: var(--background-color);
+    display: flex;
+    /* Make body a flex container */
+    justify-content: center;
+    /* Center children horizontally */
+    align-items: center;
+    /* Center children vertically */
+}
+
+h1 {
+    margin-top: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.7em;
+    /* Increase font size for better readability */
+    border-bottom: var(--border-color) solid 1px;
+}
+
+#domainForm {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 20px;
+}
+
+#domainInput {
+    color: var(--title-color);
+    background-color: var(--input-field-color);
+    width: 53%;
+    height: 20px;
+    /* Set the height of the input field */
+    padding: 5px;
+    /* Add some padding for better touch target size */
+    font-size: 1em;
+    /* Adjust font size for better readability */
+    /* margin-left: auto; */
+    /* Center the input field horizontally */
+    /* margin-right: auto; */
+    /* Center the input field horizontally */
+}
+
+#domainList {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    list-style-type: none;
+    /* Removes bullets */
+    padding-left: 20px;
+    /* Removes default padding */
+    font-size: 1em;
+    /* Decrease font size slightly for better readability */
+}
+
+#domainList li button {
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+
+button {
+    color: var(--title-color);
+    background-color: var(--button-color);
+    height: 30px;
+    padding: 5px 10px;
+    /* Increase padding for better touch target size */
+    font-size: 1em;
+    /* Decrease font size slightly for better readability */
+}
+
+#alertContainer {
+    display: none;
+    padding: 10px;
+    background-color: var(--warning-color);
+    color: var(--title-color);
+    margin-bottom: 10px;
+    font-size: 1em;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.footer__donation {
+    margin-top: auto;
+    border-top: var(--border-color) solid 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.footer__donation #donation__badge {
+    width: 190px;
+    height: auto;
+}
+
+.footer__donation #qrcode {
+    width: 100px;
+    height: auto;
+}
+
+@media (min-width: 360px) {
+    body {
+        max-width: 100%;
+        max-height: 100%;
+    }
+}
