@@ -36,11 +36,11 @@ function videoPlayerShowControls() {
 			}
 		}
 		if (changeAtribs) {
-			browser.storage.local.get('excludedDomains', function (data) {
-				const domains = data.excludedDomains || [];
+			browser.storage.local.get('includedDomains', function (data) {
+				const domains = data.includedDomains || [];
 				const currentDomain = window.location.hostname;
-				// Check if the current domain is not in the excluded domains list
-				if (!domains.includes(currentDomain)) {
+				// Check if the current domain is in the included domains list
+				if (domains.includes(currentDomain)) {
 					element.setAttribute("controls", "true");
 				}
 			});
