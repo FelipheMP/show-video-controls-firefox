@@ -4,7 +4,7 @@ document.getElementById('domainForm').addEventListener('submit', function (event
     const domainTrim = domainInput.value.trim(); // Trim whitespace
     const domain = domainTrim.toLowerCase();
 
-    if (domain === '') {
+    if (domain === '' || isValidDomain(domain) === false) {
         showAlert('Error: Enter a valid domain.');
         return;
     }
@@ -22,6 +22,15 @@ document.getElementById('domainForm').addEventListener('submit', function (event
         domainInput.value = ''; // Input field cleaner.
     });
 });
+
+function isValidDomain(domain) {
+    // Regex to validate domain names (e.g., "example.com")
+    // - (?!:\/\/): Disallows protocols like "http://"
+    // - ([a-zA-Z0-9-_]+\.): Matches subdomains and the main domain part
+    // - [a-zA-Z]{2,}: Ensures the top-level domain (TLD) is at least 2 letters long (e.g., ".com", ".br")
+    const domainRegex = /^(?!:\/\/)([a-zA-Z0-9-_]+\.)+[a-zA-Z]{2,}$/;
+    return domainRegex.test(domain);
+}
 
 function updateDomainList() {
     browser.storage.local.get('excludedDomains', function (data) {
@@ -83,7 +92,7 @@ function showAlert(message) {
     // Hiding alert after a while
     setTimeout(function () {
         alertContainer.style.display = 'none';
-    }, 10000); // Hide after 10 seconds
+    }, 5000); // Hide after 5 seconds
 }
 
 updateDomainList();

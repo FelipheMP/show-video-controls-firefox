@@ -1,60 +1,48 @@
 {
-  "manifest_version": 2,
-  "name": "Show Video Controls by Default for Firefox",
-  "version": "3.0.6",
-  "permissions": [
-    "activeTab",
-    "storage",
-    "<all_urls>",
-    "*://*/*"
-  ],
-  "background": {
-    "scripts": [
-      "showvideocontrolsbydefault.js"
-    ]
-  },
-  "browser_action": {
-    "default_popup": "popup.html"
-  },
-  "description": "This extension automatically enables video controls when playing html <video></video> webm videos.",
-  "icons": {
-    "128": "icons/icon128.png",
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png"
-  },
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "showvidcontrolsbydefault@knighto.codeberg.org",
-      "strict_min_version": "115.0"
-    }
-  },
-  "content_scripts": [
-    {
-      "exclude_matches": [
-        "*://*.youtube.com/*",
-        "*://*.netflix.com/*",
-        "*://*.vimeo.com/*",
-        "*://*.dailymotion.com/*",
-        "*://*.hulu.com/*",
-        "*://*.twitch.tv/*",
-        "*://youtube.com/*",
-        "*://youtu.be/*",
-        "*://netflix.com/*",
-        "*://vimeo.com/*",
-        "*://dailymotion.com/*",
-        "*://hulu.com/*",
-        "*://twitch.tv/*",
-        "*://*.instagram.com/*",
-        "*://*.rumble.com/*",
-        "*://*.facebook.com/*"
-      ],
-      "matches": [
-        "<all_urls>",
-        "*://*/*"
-      ],
-      "js": [
-        "showvideocontrolsbydefault.js"
-      ]
-    }
-  ]
+	"manifest_version": 2,
+	"name": "Show Video Controls by Default for Firefox",
+	"version": "3.0.9",
+	"permissions": ["activeTab", "storage", "<all_urls>", "*://*/*"],
+	"background": {
+		"scripts": ["showvideocontrolsbydefault.js"]
+	},
+	"browser_action": {
+		"default_popup": "popup.html"
+	},
+	"description": "This extension automatically enables video controls when playing html <video></video> webm videos.",
+	"icons": {
+		"128": "icons/icon128.png",
+		"16": "icons/icon16.png",
+		"48": "icons/icon48.png"
+	},
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "showvidcontrolsbydefault@knighto.codeberg.org",
+			"strict_min_version": "115.0"
+		}
+	},
+	"content_scripts": [
+		{
+			"exclude_matches": [
+				"*://*.youtube.com/*",
+				"*://*.netflix.com/*",
+				"*://*.vimeo.com/*",
+				"*://*.dailymotion.com/*",
+				"*://*.hulu.com/*",
+				"*://*.twitch.tv/*",
+				"*://youtube.com/*",
+				"*://youtu.be/*",
+				"*://netflix.com/*",
+				"*://vimeo.com/*",
+				"*://dailymotion.com/*",
+				"*://hulu.com/*",
+				"*://twitch.tv/*",
+				"*://*.instagram.com/*",
+				"*://*.rumble.com/*",
+				"*://*.facebook.com/*"
+			],
+			"matches": ["<all_urls>", "*://*/*"],
+			"js": ["showvideocontrolsbydefault.js"]
+		}
+	]
 }
