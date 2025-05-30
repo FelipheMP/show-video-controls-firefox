@@ -1,4 +1,4 @@
-# Show Video Controls for Firefox
+# Show Video Controls for Firefox [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/FelipheMP/show-video-controls-firefox)
 Firefox add-on that automatically enables video controls when playing html webm videos.
 
 Useful when browsing meme sites such as 9gag.
