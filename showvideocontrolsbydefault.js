@@ -9,6 +9,11 @@ function setupObserver() {
 		for (const mutation of mutationsList) {
 			if (mutation.type === 'childList') {
 				videoPlayerShowControls();
+
+                // 9gag mute button and video duration overlay remover
+                if (window.location.hostname.includes("9gag.com")) {
+                    removeOverlays9gag();
+                }
 			}
 		}
 	};
@@ -16,11 +21,8 @@ function setupObserver() {
 	// Create an observer instance linked to the callback function
 	observer = new MutationObserver(callback);
 
-	// Options for the observer (which mutations to observe)
-	const options = config;
-
 	// Start observing the document with the configured parameters
-	observer.observe(document.body, options);
+	observer.observe(document.body, config);
 }
 
 function videoPlayerShowControls() {
@@ -48,7 +50,16 @@ function videoPlayerShowControls() {
 	}
 }
 
+function removeOverlays9gag() {
+    document.querySelectorAll(".sound-toggle, .length, .presenting").forEach(element => {
+        element.remove(); // element.style.display = "none"; <- just hiding it instead option
+    });
+}
+
 videoPlayerShowControls();
+if (window.location.hostname.includes("9gag.com")) {
+    removeOverlays9gag();
+}
 
 // Setup the observer to monitor for changes in the DOM
 setupObserver();
