@@ -8,12 +8,17 @@ function setupObserver() {
 	const callback = function (mutationsList, observer) {
 		for (const mutation of mutationsList) {
 			if (mutation.type === 'childList') {
-				videoPlayerShowControls();
-
-                // 9gag mute button and video duration overlay remover
+                // Site-specific overlay removals first
                 if (window.location.hostname.includes("9gag.com")) {
                     removeOverlays9gag();
                 }
+                if (window.location.hostname.includes("instagram.com")) {
+                    removeOverlaysInstagram();
+                    adjustInstagramVideoOverlayButtonsMargins();
+                }
+
+                // Then apply video controls
+				videoPlayerShowControls();
 			}
 		}
 	};
@@ -29,11 +34,11 @@ function videoPlayerShowControls() {
 	let vidAtribs = document.getElementsByTagName("video");
 	for (const element of vidAtribs) {
 		let changeAtribs = false;
-		if (element.getAttribute("controls") == null || element.getAttribute("controls") == "false") {
+		if (element.getAttribute("controls") === null || element.getAttribute("controls") === "false") {
 			changeAtribs = true;
 		}
 		if (element.hasAttribute("src")) {
-			if (!element.getAttribute("src") == "") {
+			if (!element.getAttribute("src")) {
 				changeAtribs = false;
 			}
 		}
@@ -56,10 +61,34 @@ function removeOverlays9gag() {
     });
 }
 
-videoPlayerShowControls();
+function removeOverlaysInstagram() {
+    const selector = 'div[data-visualcompletion="ignore"]';
+    document.querySelectorAll(selector).forEach(element => {
+        // Disable event capturing and mark as processed
+        element.style.pointerEvents = 'none';
+        element.setAttribute('data-igblock', 'true');
+    });
+}
+
+function adjustInstagramVideoOverlayButtonsMargins() {
+    const nodes = document.querySelectorAll('button._aswp._aswq._aswu._asw_._asx2');
+    nodes.forEach(element => {
+        if (element.style.marginBottom !== '35px') {
+            element.style.marginBottom = '35px';
+            element.setAttribute('data-igmarginfix', 'true');
+        }
+    });
+}
+
+// Remove overlays first for known sites, then apply controls
 if (window.location.hostname.includes("9gag.com")) {
     removeOverlays9gag();
 }
+if (window.location.hostname.includes("instagram.com")) {
+    removeOverlaysInstagram();
+    adjustInstagramVideoOverlayButtonsMargins();
+}
+videoPlayerShowControls();
 
 // Setup the observer to monitor for changes in the DOM
 setupObserver();

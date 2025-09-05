@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Show Video Controls by Default for Firefox",
-	"version": "3.1.0",
+	"version": "3.2.0",
 	"permissions": ["activeTab", "storage", "<all_urls>", "*://*/*"],
 	"background": {
 		"scripts": ["showvideocontrolsbydefault.js"]
@@ -37,7 +37,6 @@
 				"*://dailymotion.com/*",
 				"*://hulu.com/*",
 				"*://twitch.tv/*",
-				"*://*.instagram.com/*",
 				"*://*.rumble.com/*",
 				"*://*.facebook.com/*"
 			],
