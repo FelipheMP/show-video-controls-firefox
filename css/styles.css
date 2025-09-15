@@ -5,6 +5,7 @@
     --input-field-color: var(--button-color);
     --warning-color: #c2160a;
     --border-color: rgb(53, 62, 65);
+    --accent-color: #3b82f6; /* control highlight */
 }
 
 .page-container {
@@ -91,6 +92,48 @@ button {
     /* Increase padding for better touch target size */
     font-size: 1em;
     /* Decrease font size slightly for better readability */
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+}
+
+/* Mode selector styling */
+#modeSection label {
+    font-size: 0.95em;
+    color: var(--title-color);
+}
+
+#modeSelect {
+    color: var(--title-color);
+    background-color: var(--input-field-color);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 6px 8px;
+}
+
+#modeSelect:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+/* Checkbox styling (for future or if added elsewhere in popup) */
+input[type="checkbox"] {
+    accent-color: var(--accent-color);
+    width: 16px;
+    height: 16px;
+}
+
+/* Inputs and buttons hover/focus states */
+button:hover {
+    filter: brightness(1.05);
+}
+
+button:focus,
+input:focus,
+select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 #alertContainer {
@@ -103,6 +146,31 @@ button {
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
+    word-break: break-word;
+    white-space: normal;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+/* Alert types */
+#alertContainer.is-info {
+    background-color: rgba(59, 130, 246, 0.25);
+    color: #dbeafe; /* light info text */
+}
+
+#alertContainer.is-error {
+    background-color: var(--warning-color);
+    color: var(--title-color);
+}
+
+/* Ensure the alert message text wraps nicely */
+#alertMessage {
+    display: block;
+    max-width: 100%;
+    white-space: pre-wrap;
+    word-break: break-word;
+    text-align: center;
+    line-height: 1.35;
 }
 
 .footer__donation {

@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Show Video Controls by Default for Firefox",
-	"version": "3.2.0",
+	"version": "4.0.0",
 	"permissions": ["activeTab", "storage", "<all_urls>", "*://*/*"],
 	"background": {
 		"scripts": ["showvideocontrolsbydefault.js"]
@@ -18,7 +18,10 @@
 	"browser_specific_settings": {
 		"gecko": {
 			"id": "showvidcontrolsbydefault@knighto.codeberg.org",
-			"strict_min_version": "115.0"
+			"strict_min_version": "115.0",
+			"data_collection_permissions": {
+				"required": ["none"]
+			}
 		}
 	},
 	"content_scripts": [
