@@ -22,6 +22,13 @@
 			"data_collection_permissions": {
 				"required": ["none"]
 			}
+		},
+		"gecko_android": {
+			"id": "showvidcontrolsbydefault@knighto.codeberg.org",
+			"strict_min_version": "142.0",
+			"data_collection_permissions": {
+				"required": ["none"]
+			}
 		}
 	},
 	"content_scripts": [
