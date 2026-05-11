@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Show Video Controls by Default for Firefox",
-	"version": "4.0.0",
+	"version": "4.1.0",
 	"permissions": ["activeTab", "storage", "<all_urls>", "*://*/*"],
 	"background": {
 		"scripts": ["showvideocontrolsbydefault.js"]
