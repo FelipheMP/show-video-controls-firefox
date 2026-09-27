@@ -9,6 +9,7 @@
 	"browser_action": {
 		"default_popup": "popup.html"
 	},
+	"content_security_policy": "script-src 'self'; object-src 'self';",
 	"description": "This extension automatically enables video controls when playing html <video></video> webm videos.",
 	"icons": {
 		"128": "icons/icon128.png",
