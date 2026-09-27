@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en_US">
+<html lang="en-US" data-theme="system">
 
 <head>
-	<title>Domain Settings</title>
+	<title>Show Video Controls — Settings</title>
 	<meta charset="UTF-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<link rel="stylesheet" href="./css/reset.css" />
 	<link rel="stylesheet" href="./css/styles.css" />
@@ -12,35 +11,133 @@
 
 <body>
 	<div class="page-container">
-		<header>
-			<h1 id="pageTitle">Excluded Domains</h1>
+		<header class="app-header">
+			<span class="app-logo" aria-hidden="true">▶</span>
+			<div>
+				<h1>Show Video Controls</h1>
+				<p class="subtitle" data-i18n="subtitle">Video controls, by default.</p>
+			</div>
 		</header>
-		<div id="modeSection"
-			style="display:flex; align-items:center; gap:8px; justify-content:center; margin-bottom: 10px;">
-			<label for="modeSelect">Mode:</label>
-			<select id="modeSelect">
-				<option value="exclude">Exclude list (default allow)</option>
-				<option value="include">Include-only (default block)</option>
-			</select>
-		</div>
-		<div id="alertContainer">
-			<span id="alertMessage"></span>
-		</div>
-		<form id="domainForm">
-			<input type="text" id="domainInput" placeholder="www.youtube.com" />
-			<button type="submit">Add Domain</button>
-		</form>
-		<ul id="domainList"></ul>
 
-		<footer class="footer__donation">
-			<a href="https://ko-fi.com/coreboolean" target="_blank" rel="noopener noreferrer">
-				<img id="donation__badge" alt="Ko-fi donation badge with link" src="/ko-fi/kofi_s_tag_dark.png" />
-			</a>
-			<a href="https://ko-fi.com/coreboolean" target="_blank" rel="noopener noreferrer">
-				<img id="qrcode" alt="Ko-fi donation qrcode with link" src="/ko-fi/myqrcode.png" />
-			</a>
+		<!-- Appearance and language remain available without leaving the popup. -->
+		<div class="preferences">
+			<div class="language-picker" id="languagePicker">
+				<span class="preference-label" id="languageLabel" data-i18n="language">Language</span>
+				<button type="button" id="languageToggle" class="language-trigger" aria-haspopup="menu"
+					aria-expanded="false" aria-controls="languageMenu" aria-labelledby="languageLabel languageCode">
+					<span id="languageFlag" class="language-flag" aria-hidden="true">🇺🇸</span>
+					<span id="languageCode">en-US</span>
+					<span class="language-chevron" aria-hidden="true">⌄</span>
+				</button>
+				<!-- Locale codes stay fixed; only the surrounding interface is translated. -->
+				<div id="languageMenu" class="language-menu" role="menu" aria-labelledby="languageLabel" hidden>
+					<button type="button" class="language-option" role="menuitemradio" data-language="en"
+						aria-checked="true" tabindex="-1">
+						<span class="language-flag" aria-hidden="true">🇺🇸</span>
+						<span>en-US</span>
+						<span class="language-check" aria-hidden="true">✓</span>
+					</button>
+					<button type="button" class="language-option" role="menuitemradio" data-language="pt-BR"
+						aria-checked="false" tabindex="-1">
+						<span class="language-flag" aria-hidden="true">🇧🇷</span>
+						<span>pt-BR</span>
+						<span class="language-check" aria-hidden="true">✓</span>
+					</button>
+				</div>
+			</div>
+			<label class="theme-control" for="themeSelect">
+				<span class="preference-label" data-i18n="theme">Theme</span>
+				<select id="themeSelect">
+					<option value="system" data-i18n="themeSystem">System</option>
+					<option value="light" data-i18n="themeLight">Light</option>
+					<option value="dark" data-i18n="themeDark">Dark</option>
+				</select>
+			</label>
+		</div>
+
+		<main>
+			<!-- Native radio inputs provide keyboard navigation and one selected mode. -->
+			<fieldset id="modeSection">
+				<legend data-i18n="modeHeading">Where should controls appear?</legend>
+				<label class="mode-card">
+					<input type="radio" name="mode" value="exclude" checked />
+					<span>
+						<strong data-i18n="excludeMode">On all sites</strong>
+						<span class="secondary" data-i18n="excludeDescription">Except the sites in your list.</span>
+					</span>
+				</label>
+				<label class="mode-card">
+					<input type="radio" name="mode" value="include" />
+					<span>
+						<strong data-i18n="includeMode">Only on selected sites</strong>
+						<span class="secondary" data-i18n="includeDescription">Only the sites in your list.</span>
+					</span>
+				</label>
+			</fieldset>
+
+			<section class="list-card" aria-labelledby="pageTitle">
+				<div class="list-heading">
+					<h2 id="pageTitle">Excluded sites</h2>
+					<span id="domainCount" class="count" aria-hidden="true">0</span>
+				</div>
+				<form id="domainForm" novalidate>
+					<label for="domainInput" data-i18n="domainLabel">Site domain</label>
+					<div class="form-controls">
+						<input type="text" id="domainInput" placeholder="example.com" autocomplete="off"
+							autocapitalize="none" spellcheck="false" inputmode="url" aria-describedby="domainHint" />
+						<button type="submit" class="primary" data-i18n="addDomain">Add site</button>
+					</div>
+					<p id="domainHint" class="secondary" data-i18n="domainHint">Enter a domain, without https:// or a path.</p>
+				</form>
+				<!-- Keep live regions in the DOM so changes are announced reliably. -->
+				<p id="alertMessage" class="feedback" role="alert" aria-atomic="true"></p>
+				<p id="statusMessage" class="feedback" role="status" aria-atomic="true"></p>
+				<p id="emptyList" class="empty-list"></p>
+				<ul id="domainList" aria-labelledby="pageTitle"></ul>
+			</section>
+
+			<p class="scope-note" data-i18n="scopeNote">Applies to supported video players. Some sites are not supported.</p>
+		</main>
+
+		<!-- Two independent ways to contribute, with their destinations stated clearly. -->
+		<footer class="footer__donation" aria-labelledby="contributeTitle">
+			<h2 id="contributeTitle" data-i18n="contributeTitle">Help this project grow</h2>
+			<p class="footer-intro" data-i18n="contributeDescription">Your support and feedback make a difference.</p>
+			<div class="footer-actions">
+				<a class="footer-action" href="https://ko-fi.com/coreboolean" target="_blank"
+					rel="noopener noreferrer" aria-describedby="externalLinkHint">
+					<span class="footer-icon" aria-hidden="true">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+							stroke-linecap="round" stroke-linejoin="round" focusable="false">
+							<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z" />
+						</svg>
+					</span>
+					<span class="footer-action-copy">
+						<strong data-i18n="support">Support the project</strong>
+						<span data-i18n="supportDescription">Contribute through Ko-fi</span>
+					</span>
+					<span class="footer-arrow" aria-hidden="true">↗</span>
+				</a>
+				<a class="footer-action" href="https://addons.mozilla.org/firefox/addon/show-video-controls-firefox/"
+					target="_blank" rel="noopener noreferrer" aria-describedby="externalLinkHint">
+					<span class="footer-icon" aria-hidden="true">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+							stroke-linecap="round" stroke-linejoin="round" focusable="false">
+							<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z" />
+						</svg>
+					</span>
+					<span class="footer-action-copy">
+						<strong data-i18n="rateAddon">Rate add-on</strong>
+						<span data-i18n="rateDescription">Leave a review on Firefox Add-ons</span>
+					</span>
+					<span class="footer-arrow" aria-hidden="true">↗</span>
+				</a>
+			</div>
+			<span id="externalLinkHint" class="visually-hidden" data-i18n="opensNewTab">Opens in a new tab.</span>
 		</footer>
 	</div>
+	<!-- Plain scripts keep this extension easy to maintain without a build step. -->
+	<script src="popup-i18n.js"></script>
 	<script src="popup.js"></script>
 </body>
 

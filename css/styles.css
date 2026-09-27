@@ -1,202 +1,505 @@
+/* Shared design tokens. System appearance is the default on first launch. */
 :root {
-	--background-color: rgb(10, 12, 14);
-	--title-color: white;
-	--button-color: rgb(23, 26, 27);
-	--input-field-color: var(--button-color);
-	--warning-color: #c2160a;
-	--border-color: rgb(53, 62, 65);
-	--accent-color: #3b82f6;
-	/* control highlight */
+	color-scheme: light;
+	--background-color: #f3f5fa;
+	--surface-color: #ffffff;
+	--title-color: #202432;
+	--secondary-color: #596174;
+	--border-color: #d8deea;
+	--accent-color: #5145cd;
+	--accent-text-color: #ffffff;
+	--accent-surface-color: #eeebff;
+	--warning-color: #a32323;
+	--warning-surface-color: #fff0f0;
+}
+
+/* Follow the OS unless the user explicitly chooses the light theme. */
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) {
+		color-scheme: dark;
+		--background-color: #13151d;
+		--surface-color: #1b1d26;
+		--title-color: #eceef5;
+		--secondary-color: #b0b8ca;
+		--border-color: #383d4c;
+		--accent-color: #b4a8ff;
+		--accent-text-color: #211750;
+		--accent-surface-color: #302b49;
+		--warning-color: #ffb4b4;
+		--warning-surface-color: #40252b;
+	}
+}
+
+/* Explicit dark appearance also works when the OS uses a light theme. */
+:root[data-theme="dark"] {
+	color-scheme: dark;
+	--background-color: #13151d;
+	--surface-color: #1b1d26;
+	--title-color: #eceef5;
+	--secondary-color: #b0b8ca;
+	--border-color: #383d4c;
+	--accent-color: #b4a8ff;
+	--accent-text-color: #211750;
+	--accent-surface-color: #302b49;
+	--warning-color: #ffb4b4;
+	--warning-surface-color: #40252b;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	/* A compact desktop popup that can shrink to narrow mobile viewports. */
+	width: 390px;
+	max-width: 100vw;
+	margin: 0;
+	background-color: var(--background-color);
+	color: var(--title-color);
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	font-size: 14px;
+	line-height: 1.5;
 }
 
 .page-container {
 	display: flex;
 	flex-direction: column;
-	min-height: 100vh;
-	/* Ensures the container takes at least full viewport height */
+	width: 100%;
+	/* Natural height avoids blank space and allows long lists to scroll. */
 }
 
-body {
-	color: var(--title-color);
-	font-family: Arial, sans-serif;
-	min-width: 360px;
-	max-width: 428px;
-	min-height: 600px;
-	max-height: 700px;
-	overflow-y: auto;
-	/* Enable scrolling if content exceeds the set size */
-	background-color: var(--background-color);
+.app-header {
 	display: flex;
-	/* Make body a flex container */
-	justify-content: center;
-	/* Center children horizontally */
 	align-items: center;
-	/* Center children vertically */
+	gap: 12px;
+	padding: 20px 18px 12px;
+}
+
+.app-logo {
+	display: grid;
+	place-items: center;
+	flex-shrink: 0;
+	width: 38px;
+	height: 38px;
+	border-radius: 12px;
+	background-color: var(--accent-surface-color);
+	color: var(--accent-color);
 }
 
 h1 {
-	margin-top: 20px;
-	text-align: center;
-	margin-bottom: 20px;
-	font-size: 1.7em;
-	/* Increase font size for better readability */
-	border-bottom: var(--border-color) solid 1px;
+	font-size: 17px;
+	font-weight: 650;
+	line-height: 1.3;
 }
 
-#domainForm {
+.subtitle,
+.secondary,
+.scope-note {
+	color: var(--secondary-color);
+	font-size: 12px;
+}
+
+.subtitle {
+	margin-top: 3px;
+}
+
+.preferences {
 	display: flex;
-	justify-content: center;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 0 18px 18px;
+}
+
+.theme-control {
+	display: block;
+	margin-left: auto;
+}
+
+.preference-label {
+	display: block;
+	margin-bottom: 6px;
+	color: var(--secondary-color);
+	font-size: 12px;
+}
+
+.language-picker {
+	position: relative;
+}
+
+/* Fixed geometry prevents layout shifts when switching between locale codes. */
+#languageToggle {
+	display: flex;
 	align-items: center;
-	gap: 5px;
-	margin-bottom: 20px;
+	gap: 9px;
+	width: 142px;
+	text-align: left;
+}
+
+.language-flag {
+	flex-shrink: 0;
+	font-size: 20px;
+	line-height: 1;
+}
+
+.language-chevron,
+.language-check {
+	margin-left: auto;
+}
+
+#languageToggle[aria-expanded="true"] {
+	border-color: var(--accent-color);
+}
+
+#languageToggle[aria-expanded="true"] .language-chevron {
+	transform: rotate(180deg);
+}
+
+/* Overlay the content without changing the popup's height when the menu opens. */
+.language-menu {
+	position: absolute;
+	z-index: 10;
+	top: calc(100% + 7px);
+	left: 0;
+	width: 180px;
+	max-width: calc(100vw - 36px);
+	padding: 6px;
+	border: 1px solid var(--border-color);
+	border-radius: 12px;
+	background-color: var(--surface-color);
+	box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
+}
+
+.language-menu .language-option {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	min-height: 50px;
+	border: 0;
+	border-radius: 7px;
+	text-align: left;
+}
+
+.language-option[aria-checked="true"] {
+	background-color: var(--accent-surface-color);
+	color: var(--accent-color);
+}
+
+.language-option[aria-checked="false"] .language-check {
+	visibility: hidden;
+}
+
+main {
+	padding: 0 18px 18px;
+}
+
+fieldset {
+	min-width: 0;
+	margin-bottom: 18px;
+}
+
+legend,
+h2 {
+	font-size: 14px;
+	font-weight: 650;
+}
+
+legend {
+	margin-bottom: 10px;
+}
+
+.mode-card {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	padding: 13px;
+	border: 1px solid var(--border-color);
+	border-radius: 12px;
+	background-color: var(--surface-color);
+	cursor: pointer;
+}
+
+.mode-card + .mode-card {
+	margin-top: 8px;
+}
+
+.mode-card:has(input:checked) {
+	border-color: var(--accent-color);
+	background-color: var(--accent-surface-color);
+}
+
+.mode-card strong,
+.mode-card .secondary {
+	display: block;
+}
+
+.mode-card strong {
+	font-weight: 600;
+}
+
+.mode-card .secondary {
+	margin-top: 3px;
+}
+
+/* Native radios retain arrow-key navigation and platform accessibility. */
+input[type="radio"] {
+	accent-color: var(--accent-color);
+	width: 18px;
+	height: 18px;
+	margin: 2px 0 0;
+	flex-shrink: 0;
+}
+
+button,
+select,
+input[type="text"] {
+	min-height: 44px;
+	border: 1px solid var(--border-color);
+	border-radius: 9px;
+	padding: 9px 12px;
+	background-color: var(--surface-color);
+	color: var(--title-color);
+	font: inherit;
+}
+
+button,
+select {
+	cursor: pointer;
+}
+
+.preferences button,
+.preferences select {
+	font-size: 12px;
+}
+
+/* Visible focus is preserved for keyboard users on every interactive element. */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible {
+	outline: 3px solid var(--accent-color);
+	outline-offset: 3px;
+}
+
+@media (hover: hover) {
+	button:hover,
+	.footer__donation a:hover {
+		text-decoration: underline;
+	}
+}
+
+.list-card {
+	padding: 14px;
+	border: 1px solid var(--border-color);
+	border-radius: 14px;
+	background-color: var(--surface-color);
+}
+
+.list-heading {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 12px;
+}
+
+.count {
+	min-width: 25px;
+	padding: 2px 7px;
+	border-radius: 6px;
+	background-color: var(--accent-surface-color);
+	color: var(--accent-color);
+	font-size: 12px;
+	text-align: center;
+	font-variant-numeric: tabular-nums;
+}
+
+#domainForm label {
+	display: block;
+	margin-bottom: 6px;
+	font-size: 12px;
+}
+
+.form-controls {
+	display: flex;
+	gap: 8px;
 }
 
 #domainInput {
-	color: var(--title-color);
-	background-color: var(--input-field-color);
-	width: 53%;
-	height: 20px;
-	/* Set the height of the input field */
-	padding: 5px;
-	/* Add some padding for better touch target size */
-	font-size: 1em;
-	/* Adjust font size for better readability */
-	/* margin-left: auto; */
-	/* Center the input field horizontally */
-	/* margin-right: auto; */
-	/* Center the input field horizontally */
+	min-width: 0;
+	width: 100%;
+	/* Readable input text also avoids mobile focus zoom. */
+	font-size: 16px;
+}
+
+#domainInput::placeholder {
+	color: var(--secondary-color);
+	opacity: 1;
+}
+
+.primary {
+	flex-shrink: 0;
+	border-color: transparent;
+	background-color: var(--accent-color);
+	color: var(--accent-text-color);
+	font-weight: 600;
+}
+
+#domainHint {
+	margin-top: 8px;
 }
 
 #domainList {
+	margin-top: 12px;
+}
+
+#domainList li {
 	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: flex-start;
-	list-style-type: none;
-	/* Removes bullets */
-	padding-left: 20px;
-	/* Removes default padding */
-	font-size: 1em;
-	/* Decrease font size slightly for better readability */
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 6px 0;
+	border-top: 1px solid var(--border-color);
 }
 
-#domainList li button {
-	margin-bottom: 10px;
-	margin-left: 10px;
+.domain-name {
+	min-width: 0;
+	overflow-wrap: anywhere;
 }
 
-button {
-	color: var(--title-color);
-	background-color: var(--button-color);
-	height: 30px;
-	padding: 5px 10px;
-	/* Increase padding for better touch target size */
-	font-size: 1em;
-	/* Decrease font size slightly for better readability */
-	border: 1px solid var(--border-color);
-	border-radius: 6px;
+.remove-button {
+	flex-shrink: 0;
+	min-width: 44px;
+	color: var(--secondary-color);
+	border-color: transparent;
+	padding: 8px;
+	font-size: 12px;
 }
 
-/* Mode selector styling */
-#modeSection label {
-	font-size: 0.95em;
-	color: var(--title-color);
+.empty-list {
+	margin-top: 16px;
+	color: var(--secondary-color);
 }
 
-#modeSelect {
-	color: var(--title-color);
-	background-color: var(--input-field-color);
-	border: 1px solid var(--border-color);
-	border-radius: 6px;
-	padding: 6px 8px;
-}
-
-#modeSelect:focus {
-	outline: none;
-	border-color: var(--accent-color);
-	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
-}
-
-/* Checkbox styling (for future or if added elsewhere in popup) */
-input[type="checkbox"] {
-	accent-color: var(--accent-color);
-	width: 16px;
-	height: 16px;
-}
-
-/* Inputs and buttons hover/focus states */
-button:hover {
-	filter: brightness(1.05);
-}
-
-button:focus,
-input:focus,
-select:focus {
-	outline: none;
-	border-color: var(--accent-color);
-	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-}
-
-#alertContainer {
-	display: none;
+/* Feedback stays visible until the next action instead of expiring while read. */
+.feedback:not(:empty) {
+	margin-top: 12px;
 	padding: 10px;
-	background-color: var(--warning-color);
-	color: var(--title-color);
-	margin-bottom: 10px;
-	font-size: 1em;
-	justify-content: center;
-	align-items: center;
-	box-sizing: border-box;
-	word-break: break-word;
-	white-space: normal;
-	width: 100%;
-	flex-wrap: wrap;
+	border-radius: 8px;
+	font-size: 12px;
+	overflow-wrap: anywhere;
 }
 
-/* Alert types */
-#alertContainer.is-info {
-	background-color: rgba(59, 130, 246, 0.25);
-	color: #dbeafe;
-	/* light info text */
+#alertMessage:not(:empty) {
+	background-color: var(--warning-surface-color);
+	color: var(--warning-color);
 }
 
-#alertContainer.is-error {
-	background-color: var(--warning-color);
-	color: var(--title-color);
+#statusMessage:not(:empty) {
+	background-color: var(--accent-surface-color);
+	color: var(--accent-color);
 }
 
-/* Ensure the alert message text wraps nicely */
-#alertMessage {
-	display: block;
-	max-width: 100%;
-	white-space: pre-wrap;
-	word-break: break-word;
-	text-align: center;
-	line-height: 1.35;
+.scope-note {
+	margin-top: 12px;
 }
 
+/* Contribution links share the same emphasis and generous touch targets. */
 .footer__donation {
-	margin-top: auto;
-	border-top: var(--border-color) solid 1px;
+	border-top: 1px solid var(--border-color);
+	padding: 18px;
+}
+
+.footer__donation h2 {
+	font-size: 15px;
+}
+
+.footer-intro {
+	margin: 5px 0 15px;
+	color: var(--secondary-color);
+	font-size: 12px;
+}
+
+.footer-actions {
+	display: grid;
+	gap: 9px;
+}
+
+.footer-action {
 	display: flex;
 	align-items: center;
-	justify-content: center;
-	gap: 10px;
+	gap: 12px;
+	min-height: 60px;
+	padding: 12px;
+	border: 1px solid var(--border-color);
+	border-radius: 10px;
+	background-color: var(--surface-color);
 }
 
-.footer__donation #donation__badge {
-	width: 190px;
-	height: auto;
+.footer-icon {
+	display: grid;
+	place-items: center;
+	flex-shrink: 0;
+	width: 34px;
+	height: 34px;
+	border-radius: 10px;
+	background-color: var(--accent-surface-color);
+	color: var(--accent-color);
 }
 
-.footer__donation #qrcode {
-	width: 100px;
-	height: auto;
+.footer-icon svg {
+	width: 19px;
+	height: 19px;
 }
 
-@media (min-width: 360px) {
+.footer-action-copy {
+	flex: 1;
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.footer-action-copy strong {
+	display: block;
+	font-weight: 600;
+}
+
+.footer-action-copy span {
+	display: block;
+	margin-top: 2px;
+	color: var(--secondary-color);
+	font-size: 12px;
+}
+
+.footer-arrow {
+	flex-shrink: 0;
+	color: var(--secondary-color);
+}
+
+/* Announce external navigation without adding repeated visible helper text. */
+.visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+/* Full-width actions are easier to reach on touch screens and narrow windows. */
+@media (pointer: coarse), (max-width: 360px) {
 	body {
-		max-width: 100%;
-		max-height: 100%;
+		width: 100%;
+	}
+
+	.form-controls {
+		flex-direction: column;
+	}
+}
+
+@media (forced-colors: active) {
+	.mode-card:has(input:checked) {
+		outline: 2px solid Highlight;
 	}
 }
