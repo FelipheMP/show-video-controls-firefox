@@ -18,7 +18,7 @@ or “Show controls” steps for each video.
 
 - **Firefox on desktop and Android.** Manage your settings with a compact interface
   and comfortable touch targets.
-- **Controls that appear automatically.** The extension watches for dynamically
+- **Controls that appear automatically.** The add-on watches for dynamically
   added videos as you browse supported pages.
 - **Your sites, your rules.** Run on supported sites by default, or enable controls
   only for the sites you choose. Each mode keeps its own list.
@@ -27,7 +27,7 @@ or “Show controls” steps for each video.
 - **English or Brazilian Portuguese.** Pick **🇺🇸 en-US** or **🇧🇷 pt-BR** from the
   language menu. Switching languages preserves the domain you are typing.
 - **Settings stored locally.** Your site lists, language, and theme stay in Firefox's
-  local extension storage.
+  local add-on storage.
 
 ## A cleaner way to manage your controls
 
@@ -38,10 +38,10 @@ or “Show controls” steps for each video.
 
 ## Get started
 
-1. Install the extension from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/show-video-controls-firefox/).
+1. Install the  from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/show-video-controls-firefox/).
 2. Visit a page with a supported HTML video. Native controls are enabled automatically
    unless the site is excluded.
-3. Open **Show Video Controls** from Firefox's extensions menu to customize where it runs.
+3. Open **Show Video Controls** from Firefox's s menu to customize where it runs.
 
 The current source requires **Firefox 140 or later on desktop** and **Firefox 142
 or later on Android**, as declared in [manifest.json](manifest.json).
@@ -73,7 +73,7 @@ menu or move focus away to dismiss it.
 
 ## Compatibility and limitations
 
-This extension enables the browser's native controls on HTML `<video>` elements.
+This add-on enables the browser's native controls on HTML `<video>` elements.
 It does not replace a website's player or add a new playback engine.
 
 - **Custom players may not work.** Sites can use their own overlays or player logic
@@ -94,11 +94,11 @@ with the page URL, Firefox version, platform, and steps to reproduce it.
 
 | Permission | Why it is used |
 | --- | --- |
-| Website access (`<all_urls>` and `*://*/*`) | Finds supported video elements and enables controls on pages where the extension is allowed to run. |
+| Website access (`<all_urls>` and `*://*/*`) | Finds supported video elements and enables controls on pages where the add-on is allowed to run. |
 | `activeTab` | Reads the active page's domain to prefill the site-list form. |
 | `storage` | Saves site rules, language, and appearance locally. |
 
-The extension code does not send browsing activity or settings to an analytics
+The add-on code does not send browsing activity or settings to an analytics
 service. The manifest declares that no data collection is required. The optional
 support and review links open Ko-fi and Firefox Add-ons in a new tab.
 
@@ -117,7 +117,7 @@ or [suggest an improvement](https://github.com/FelipheMP/show-video-controls-fir
 
 ## Develop and contribute
 
-The extension uses plain HTML, CSS, and JavaScript. **No build step or UI framework
+The add-on uses plain HTML, CSS, and JavaScript. **No build step or UI framework
 is required.**
 
 ### Run the source locally
@@ -125,10 +125,10 @@ is required.**
 1. Clone this repository and open Firefox on desktop.
 2. Open `about:debugging#/runtime/this-firefox`.
 3. Select **Load Temporary Add-on…** and choose this repository's `manifest.json`.
-4. Open the extension's popup and visit a supported page to try it.
+4. Open the add-on's popup and visit a supported page to try it.
 
 Temporary installations are removed when Firefox restarts. For device testing,
-follow Mozilla's [Firefox for Android extension development guide](https://extensionworkshop.com/documentation/develop/developing-extensions-for-firefox-for-android/).
+follow Mozilla's [Firefox for Android add-on development guide](https://extensionworkshop.com/documentation/develop/developing-extensions-for-firefox-for-android/).
 
 ### Find your way around
 
