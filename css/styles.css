@@ -498,6 +498,16 @@ a:focus-visible {
 	}
 }
 
+/* Firefox desktop measures the body before sizing the toolbar popup. Keep its
+   width independent of that initial viewport, which can be nearly zero.
+   Touch devices retain the responsive sizing above. */
+@media (pointer: fine) {
+	body {
+		width: 390px;
+		max-width: none;
+	}
+}
+
 @media (forced-colors: active) {
 	.mode-card:has(input:checked) {
 		outline: 2px solid Highlight;
