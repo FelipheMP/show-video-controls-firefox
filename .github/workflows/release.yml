@@ -85,5 +85,6 @@ jobs:
         run: |
           gh release create "${{ steps.version.outputs.tag }}" \
             "${{ steps.artifact.outputs.file }}" \
+            --verify-tag \
             --title "${{ steps.version.outputs.tag }}" \
             --generate-notes
