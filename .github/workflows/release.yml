@@ -1,0 +1,89 @@
+name: Build and Release Extension
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "manifest.json"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read version from manifest.json
+        id: version
+        shell: bash
+        run: |
+          VERSION=$(jq -r '.version' manifest.json)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check if tag already exists
+        id: tag_check
+        shell: bash
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install web-ext
+        if: steps.tag_check.outputs.exists == 'false'
+        run: npm install --global web-ext
+
+      - name: Build extension
+        if: steps.tag_check.outputs.exists == 'false'
+        run: |
+          web-ext build \
+            --overwrite-dest \
+            --artifacts-dir web-ext-artifacts
+
+      - name: Find generated ZIP
+        if: steps.tag_check.outputs.exists == 'false'
+        id: artifact
+        shell: bash
+        run: |
+          FILE=$(find web-ext-artifacts -maxdepth 1 -type f -name "*.zip" | head -n 1)
+
+          if [ -z "$FILE" ]; then
+            echo "No ZIP file generated."
+            exit 1
+          fi
+
+          echo "file=$FILE" >> "$GITHUB_OUTPUT"
+
+      - name: Create tag
+        if: steps.tag_check.outputs.exists == 'false'
+        shell: bash
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git tag "$TAG"
+          git push origin "$TAG"
+
+      - name: Create GitHub Release
+        if: steps.tag_check.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh release create "${{ steps.version.outputs.tag }}" \
+            "${{ steps.artifact.outputs.file }}" \
+            --title "${{ steps.version.outputs.tag }}" \
+            --generate-notes
