@@ -12,7 +12,8 @@ or “Show controls” steps for each video.
 
 **[Get it on Firefox Add-ons](https://addons.mozilla.org/firefox/addon/show-video-controls-firefox/)**
 · [Report a bug](https://github.com/FelipheMP/show-video-controls-firefox/issues/new?template=bug_report.md)
-· [Support the project](https://ko-fi.com/coreboolean)
+· **[Support on GitHub Sponsors](https://github.com/sponsors/FelipheMP)**
+· [Ko-fi](https://ko-fi.com/coreboolean)
 
 ## Built for the way you browse
 
@@ -100,14 +101,15 @@ with the page URL, Firefox version, platform, and steps to reproduce it.
 
 The add-on code does not send browsing activity or settings to an analytics
 service. The manifest declares that no data collection is required. The optional
-support and review links open Ko-fi and Firefox Add-ons in a new tab.
+support and review links open GitHub Sponsors, Ko-fi, and Firefox Add-ons in a new tab.
 
 ## Help this project grow
 
 If this add-on makes your browsing easier, there are two ways to help:
 
-- **[Support the project on Ko-fi](https://ko-fi.com/coreboolean)** to contribute to
-  its continued development.
+- **[Support the project on GitHub Sponsors](https://github.com/sponsors/FelipheMP)**,
+  the preferred way to contribute to its continued development.
+  You can also [contribute through Ko-fi](https://ko-fi.com/coreboolean).
 - **[Rate it on Firefox Add-ons](https://addons.mozilla.org/firefox/addon/show-video-controls-firefox/)**
   and share your experience with other Firefox users.
 

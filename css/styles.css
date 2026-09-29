@@ -406,7 +406,7 @@ a:focus-visible {
 	margin-top: 12px;
 }
 
-/* Contribution links share the same emphasis and generous touch targets. */
+/* Highlight the primary funding option and keep alternatives easy to reach. */
 .footer__donation {
 	border-top: 1px solid var(--border-color);
 	padding: 18px;
@@ -422,59 +422,42 @@ a:focus-visible {
 	font-size: 12px;
 }
 
-.footer-actions {
-	display: grid;
-	gap: 9px;
-}
-
-.footer-action {
+.footer-support {
 	display: flex;
 	align-items: center;
-	gap: 12px;
-	min-height: 60px;
+	justify-content: center;
+	gap: 9px;
+	min-height: 46px;
 	padding: 12px;
-	border: 1px solid var(--border-color);
-	border-radius: 10px;
-	background-color: var(--surface-color);
-}
-
-.footer-icon {
-	display: grid;
-	place-items: center;
-	flex-shrink: 0;
-	width: 34px;
-	height: 34px;
-	border-radius: 10px;
-	background-color: var(--accent-surface-color);
-	color: var(--accent-color);
-}
-
-.footer-icon svg {
-	width: 19px;
-	height: 19px;
-}
-
-.footer-action-copy {
-	flex: 1;
-	min-width: 0;
-	overflow-wrap: anywhere;
-}
-
-.footer-action-copy strong {
-	display: block;
+	border: 1px solid transparent;
+	border-radius: 9px;
+	background-color: var(--accent-color);
+	color: var(--accent-text-color);
 	font-weight: 600;
+	text-align: center;
 }
 
-.footer-action-copy span {
-	display: block;
-	margin-top: 2px;
+.footer-secondary-actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: 4px 12px;
+	margin-top: 8px;
+}
+
+.footer-secondary {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	min-height: 44px;
 	color: var(--secondary-color);
 	font-size: 12px;
 }
 
-.footer-arrow {
+.footer__donation svg {
+	width: 18px;
+	height: 18px;
 	flex-shrink: 0;
-	color: var(--secondary-color);
 }
 
 /* Announce external navigation without adding repeated visible helper text. */
