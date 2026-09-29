@@ -44,6 +44,10 @@ jobs:
         if: steps.tag_check.outputs.exists == 'false'
         run: npm install --global web-ext
 
+      - name: Lint extension
+        if: steps.tag_check.outputs.exists == 'false'
+        run: web-ext lint
+
       - name: Build extension
         if: steps.tag_check.outputs.exists == 'false'
         run: |
@@ -64,6 +68,18 @@ jobs:
           fi
 
           echo "file=$FILE" >> "$GITHUB_OUTPUT"
+
+      - name: Submit to Firefox Add-ons
+        if: steps.tag_check.outputs.exists == 'false'
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.AMO_API_KEY }}
+          WEB_EXT_API_SECRET: ${{ secrets.AMO_API_SECRET }}
+        run: |
+          web-ext sign \
+            --source-dir . \
+            --channel listed \
+            --use-submission-api \
+            --no-input
 
       - name: Create tag
         if: steps.tag_check.outputs.exists == 'false'
