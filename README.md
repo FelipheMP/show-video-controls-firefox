@@ -1,5 +1,7 @@
 # Show Video Controls for Firefox
 
+[![Release](https://github.com/FelipheMP/show-video-controls-firefox/actions/workflows/release.yml/badge.svg)](https://github.com/FelipheMP/show-video-controls-firefox/actions/workflows/release.yml)
+
 **Stop hunting for video controls. Start watching your way.**
 
 A video starts playing, but its playback controls are missing. Show Video Controls
