@@ -23,8 +23,13 @@ or “Show controls” steps for each video.
   and comfortable touch targets.
 - **Controls that appear automatically.** The add-on watches for dynamically
   added videos as you browse supported pages.
+- **Light on resources.** On sites where the add-on is turned off, it does no work
+  on the page. Where it is on, it only looks at newly added content. See
+  [Performance](#performance).
 - **Your sites, your rules.** Run on supported sites by default, or enable controls
   only for the sites you choose. Each mode keeps its own list.
+- **Changes apply right away.** Open pages pick up new site rules and mode changes
+  without a reload.
 - **An appearance that fits.** Choose Light, Dark, or System and keep that preference
   between sessions.
 - **English or Brazilian Portuguese.** Pick **🇺🇸 en-US** or **🇧🇷 pt-BR** from the
@@ -41,10 +46,10 @@ or “Show controls” steps for each video.
 
 ## Get started
 
-1. Install the  from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/show-video-controls-firefox/).
+1. Install the add-on from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/show-video-controls-firefox/).
 2. Visit a page with a supported HTML video. Native controls are enabled automatically
    unless the site is excluded.
-3. Open **Show Video Controls** from Firefox's s menu to customize where it runs.
+3. Open **Show Video Controls** from Firefox's extensions menu to customize where it runs.
 
 The current source requires **Firefox 140 or later on desktop** and **Firefox 142
 or later on Android**, as declared in [manifest.json](manifest.json).
@@ -63,7 +68,10 @@ Choose **Remove** to delete an entry.
 - A base domain such as `example.com` also matches its subdomains.
 - Switching modes preserves both lists.
 - An empty allowed-sites list enables controls nowhere in **Only on selected sites** mode.
-- Reload affected pages after changing site rules or switching modes.
+- Open pages follow your changes right away, in both directions: controls appear on
+  newly allowed sites and are removed from sites you disable. Controls that a site
+  provides itself are never touched. On 9GAG, overlays the add-on removed only come
+  back after a reload.
 
 ### Make it yours
 
@@ -73,6 +81,24 @@ preferences are saved automatically.
 
 The language menu supports touch, arrow keys, Enter, and Escape. Click outside the
 menu or move focus away to dismiss it.
+
+## Performance
+
+The add-on is designed to stay out of the way, which matters most on phones and
+low-power devices.
+
+- **Off means off.** On a site that is excluded (or not in your allowed list), the
+  page script reads your settings once and stops. It does not observe the page or scan
+  for videos. The only thing left is a lightweight listener that wakes up when you
+  change one of this add-on's settings.
+- **No background script.** The add-on runs only as a page script and a popup, so
+  nothing stays active in the browser between pages.
+- **Settings are read once**, then cached for the life of the page, instead of being
+  read again on every page change.
+- **Only new content is inspected.** When a page adds elements, the add-on checks just
+  those elements for videos, never the whole document.
+- **Work is batched.** Changes are handled at most once per animation frame, and
+  Firefox pauses animation frames in background tabs, so hidden tabs use no extra CPU.
 
 ## Compatibility and limitations
 
@@ -97,9 +123,13 @@ with the page URL, Firefox version, platform, and steps to reproduce it.
 
 | Permission | Why it is used |
 | --- | --- |
-| Website access (`<all_urls>` and `*://*/*`) | Finds supported video elements and enables controls on pages where the add-on is allowed to run. |
 | `activeTab` | Reads the active page's domain to prefill the site-list form. |
 | `storage` | Saves site rules, language, and appearance locally. |
+
+The page script is registered for all websites (`<all_urls>`) through the manifest's
+`content_scripts` entry, minus the exclusions listed there. That match is what lets it
+find supported video elements and enable controls on pages where the add-on is allowed
+to run. The add-on does not request separate host permissions.
 
 The add-on code does not send browsing activity or settings to an analytics
 service. The manifest declares that no data collection is required. The optional
@@ -139,7 +169,7 @@ follow Mozilla's [Firefox for Android add-on development guide](https://extensio
 | File | Responsibility |
 | --- | --- |
 | [manifest.json](manifest.json) | Firefox requirements, permissions, and script registration. |
-| [showvideocontrolsbydefault.js](showvideocontrolsbydefault.js) | Video controls, site matching, and site-specific overlay handling. |
+| [showvideocontrolsbydefault.js](showvideocontrolsbydefault.js) | Page script: site matching, video controls, and site-specific overlay handling. |
 | [popup.html](popup.html) | Settings layout, accessible controls, and contribution links. |
 | [css/styles.css](css/styles.css) | Responsive layout and light/dark theme tokens. |
 | [popup.js](popup.js) | Popup interaction, domain validation, and local storage. |
@@ -149,6 +179,10 @@ Keep changes readable and commented. Add matching translation keys to both
 language dictionaries, and preserve the existing `mode`, `excludedDomains`, and
 `includedDomains` storage keys. The `language` and `theme` keys hold UI preferences.
 
+When changing the page script, keep it cheap on the pages where it does nothing:
+no observers, timers, or scans while a site is disabled, no storage reads inside
+DOM callbacks, and no work on nodes that were not added.
+
 ### Check your changes
 
 - Test in **Firefox desktop and Firefox for Android**. A Chromium-only check is not
@@ -156,6 +190,8 @@ language dictionaries, and preserve the existing `mode`, `excludedDomains`, and
 - Check both languages and all three themes, including keyboard navigation and
   narrow screens with the on-screen keyboard open.
 - Add and remove sites, switch modes, and reopen the popup to verify persistence.
+- With a page open, change the mode or site list and confirm the open page follows the
+  change without a reload.
 - Verify controls on a supported page and confirm that excluded sites stay excluded.
 - With Mozilla's `web-ext` available, run `web-ext lint` from the repository root.
 
