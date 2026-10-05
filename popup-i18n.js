@@ -35,9 +35,11 @@ const popupTranslations = {
 		invalidDomain: 'Enter a valid domain, such as example.com.',
 		duplicateDomain: 'This site is already in the list.',
 		protectedDomain: 'Cannot add this page: protected or local domain.',
-		addedDomain: 'Site added. Reload the affected page to apply.',
-		removedDomain: 'Site removed. Reload the affected page to apply.',
-		modeChanged: 'Mode changed. Reload affected pages to apply. Your other list is kept.',
+		// Open pages react to storage changes on their own, in both directions:
+		// controls are added or removed without reloading.
+		addedDomain: 'Site added. Open pages update right away.',
+		removedDomain: 'Site removed. Open pages update right away.',
+		modeChanged: 'Mode changed. Open pages update right away. Your other list is kept.',
 		saveError: 'Could not save your changes. Please try again.',
 		loadError: 'Could not load your settings. Close and reopen this popup to try again.'
 	},
@@ -75,9 +77,11 @@ const popupTranslations = {
 		invalidDomain: 'Informe um domínio válido, como exemplo.com.',
 		duplicateDomain: 'Este site já está na lista.',
 		protectedDomain: 'Não é possível adicionar esta página: domínio protegido ou local.',
-		addedDomain: 'Site adicionado. Recarregue a página afetada para aplicar.',
-		removedDomain: 'Site removido. Recarregue a página afetada para aplicar.',
-		modeChanged: 'Modo alterado. Recarregue as páginas afetadas para aplicar. Sua outra lista foi mantida.',
+		// As páginas abertas reagem sozinhas às mudanças, nos dois sentidos:
+		// os controles são adicionados ou removidos sem recarregar.
+		addedDomain: 'Site adicionado. As páginas abertas se atualizam na hora.',
+		removedDomain: 'Site removido. As páginas abertas se atualizam na hora.',
+		modeChanged: 'Modo alterado. As páginas abertas se atualizam na hora. Sua outra lista foi mantida.',
 		saveError: 'Não foi possível salvar as alterações. Tente novamente.',
 		loadError: 'Não foi possível carregar as configurações. Feche e reabra este painel para tentar novamente.'
 	}
