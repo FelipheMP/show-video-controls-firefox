@@ -78,7 +78,6 @@ jobs:
           web-ext sign \
             --source-dir . \
             --channel listed \
-            --use-submission-api \
             --no-input
 
       - name: Create tag
