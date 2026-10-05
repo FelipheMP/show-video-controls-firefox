@@ -14,6 +14,7 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-24.04
+    environment: "Firefox Add-ons APIs"
 
     steps:
       - name: Checkout repository
