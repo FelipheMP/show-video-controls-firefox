@@ -2,172 +2,422 @@
 // Content script: show controls
 // =============================
 // This script runs on webpages (as a content script). It:
-// 1) Optionally removes site-specific overlays (e.g., Instagram, 9GAG) that block clicks.
-// 2) Enables HTML <video> controls automatically when allowed by user settings.
-// 3) Reacts to dynamic DOM changes via a MutationObserver.
+// 1) Reads the user's settings ONCE and decides whether this site is enabled.
+// 2) Only when enabled: turns on native <video> controls and, on a few sites,
+//    removes overlays that block clicks.
+// 3) Only when enabled: watches the DOM for newly added videos/overlays.
 //
-// Behavior is controlled by two lists stored in browser.storage.local:
-// - excludedDomains: when in Exclude mode (default allow), these sites are disabled.
-// - includedDomains: when in Include-only mode (default block), only these sites are enabled.
+// Performance notes (why the script is written this way):
+// - When the site is disabled (excluded, or not in the include-only list) the
+//   script does no DOM work at all: no MutationObserver, no scans. Its only
+//   remaining cost is one idle storage listener.
+// - Settings are read once and cached. They are never read per DOM mutation.
+// - The observer only inspects nodes that were ADDED, never the whole document,
+//   and batches the work into at most one run per animation frame. Browsers
+//   pause animation frames in background tabs, so hidden tabs cost nothing.
 //
-// We first check whether the extension should act on the current domain (shouldEnableOnThisDomain)
-// and only then we remove overlays and enable controls.
+// Behavior is controlled by values stored in browser.storage.local:
+// - mode: 'exclude' (default) or 'include'.
+// - excludedDomains: in exclude mode, the sites where the add-on stays off.
+// - includedDomains: in include mode, the only sites where the add-on runs.
 
-let observer;
+(() => {
+	'use strict';
 
-// Observe DOM changes to handle dynamically inserted videos/overlays.
-function setupObserver() {
-	// Configuration of the observer
-	const config = { childList: true, subtree: true };
+	const SETTINGS_KEYS = ['mode', 'excludedDomains', 'includedDomains'];
 
-	// Callback function to execute when mutations are observed
-	// Run for any added/removed nodes in the subtree (new videos/overlays)
-	const callback = function (mutationsList, observer) {
-		for (const mutation of mutationsList) {
-			if (mutation.type === 'childList') {
-				shouldEnableOnThisDomain(function (shouldEnable) {
-					// Site-specific overlay removals only when enabled for this domain
-					if (shouldEnable) {
-						if (window.location.hostname.includes("9gag.com")) {
-							removeOverlays9gag();
-						}
+	// Computed once per page: the hostname never changes for this document.
+	const hostname = window.location.hostname.toLowerCase();
 
-						if (window.location.hostname.includes("instagram.com")) {
-							removeOverlaysInstagram();
-							adjustInstagramVideoOverlayButtonsMargins();
-						}
-					}
-					// Then apply (or skip) video controls based on mode/lists
-					videoPlayerShowControls();
+	// Strict host checks (exact host or a real subdomain). A plain substring
+	// check could match look-alike hosts such as "9gag.com.example.net".
+	const isNineGag = hostMatches(hostname, '9gag.com');
+	const isInstagram = hostMatches(hostname, 'instagram.com');
+	const hasSiteFixes = isNineGag || isInstagram;
+
+	// Marks videos whose controls THIS script turned on, so that disabling can
+	// undo exactly those and never touch controls the page provided itself.
+	const ADDED_MARK = 'data-svc-added';
+
+	let active = false; // True only while the add-on is enabled on this page.
+	let observer = null; // Active MutationObserver, or null while disabled.
+	let pendingNodes = []; // Added elements waiting for the next batch.
+	let frameId = 0; // Pending requestAnimationFrame id, or 0.
+	let syncCounter = 0; // Lets a newer settings read win over an older one.
+
+	// ---------- Domain matching ----------
+
+	// True if host equals domain or is one of its subdomains.
+	// Example: 'instagram.com' matches 'instagram.com' and 'm.instagram.com'.
+	function hostMatches(host, domain) {
+		return host === domain || host.endsWith('.' + domain);
+	}
+
+	// Storage is treated as untrusted input: keep only non-empty strings,
+	// lowercase them and drop a leading "www." so entries compare consistently.
+	function normalizeList(value) {
+		if (!Array.isArray(value)) return [];
+		return value
+			.filter(entry => typeof entry === 'string')
+			.map(entry => entry.toLowerCase().replace(/^www\./, ''))
+			.filter(entry => entry.length > 0);
+	}
+
+	// Decide from the stored settings whether the add-on acts on this site.
+	// - Include mode: enabled only for domains in 'includedDomains'.
+	// - Exclude mode: enabled everywhere except domains in 'excludedDomains'.
+	function isEnabledFor(data) {
+		if (data.mode === 'include') {
+			return normalizeList(data.includedDomains).some(d => hostMatches(hostname, d));
+		}
+		return !normalizeList(data.excludedDomains).some(d => hostMatches(hostname, d));
+	}
+
+	// ---------- Video controls ----------
+
+	// Turn on native controls for one <video>, unless it has no usable source.
+	function enableControls(video) {
+		if (!active) return; // Safety net: never act while disabled.
+		const controls = video.getAttribute('controls');
+		if (controls !== null && controls !== 'false') return; // Already shown.
+		// A <video> whose src attribute exists but is empty is not ready yet.
+		if (video.hasAttribute('src') && !video.getAttribute('src')) return;
+		video.setAttribute('controls', 'true');
+		video.setAttribute(ADDED_MARK, 'true');
+	}
+
+	// Undo what enableControls() did. Only marked videos are touched.
+	function removeAddedControls() {
+		document.querySelectorAll('video[' + ADDED_MARK + ']').forEach(video => {
+			video.removeAttribute('controls');
+			video.removeAttribute(ADDED_MARK);
+		});
+	}
+
+	// Handle one added element: the element itself, or videos nested inside it.
+	function processNode(node) {
+		if (node.localName === 'video') {
+			enableControls(node);
+		} else if (node.firstElementChild) {
+			// Skip childless elements; otherwise search only inside this subtree.
+			for (const video of node.querySelectorAll('video')) {
+				enableControls(video);
+			}
+		}
+	}
+
+	// ---------- Site-specific fixes ----------
+
+	// Remove 9GAG overlay UI that may block clicks.
+	function removeOverlays9gag() {
+		document.querySelectorAll('.sound-toggle, .length, .presenting').forEach(element => {
+			element.remove(); // element.style.display = 'none'; <- hiding instead is an option
+		});
+	}
+
+	// On Instagram, stop generic overlay layers from intercepting clicks.
+	// Elements with an empty class attribute (class="") stay clickable wrappers.
+	function removeOverlaysInstagram() {
+		const selector = 'div[data-visualcompletion="ignore"]:not([class=""]):not([data-igblock])';
+		document.querySelectorAll(selector).forEach(element => {
+			element.style.pointerEvents = 'none';
+			element.setAttribute('data-igblock', 'true'); // Mark as processed.
+		});
+	}
+
+	// On Instagram, lift the audio (mute) button above the native control bar,
+	// which otherwise covers it. Instagram's class names are auto-generated and
+	// change often, and the button is a <div role="button"> with a small <svg>,
+	// so it is found by what it is and where it sits, never by class name.
+	// Only videos this add-on gave controls to are considered.
+	const IG_LIFT = '-40px'; // Roughly the height of the native control bar.
+
+	const MAX_ICON_BOX = 56; // px; larger boxes are layout containers, not the icon unit.
+
+	// Apply the lift to one element and mark it so it can be restored later.
+	function liftElement(element) {
+		element.style.transform = 'translateY(' + IG_LIFT + ')';
+		element.setAttribute('data-igmarginfix', 'true');
+	}
+
+	const NO_COLOR = ['transparent', 'rgba(0, 0, 0, 0)'];
+
+	// True if the element paints something behind its content (a background
+	// colour or image, also through ::before / ::after): the "dark circle".
+	function paintsBackdrop(element) {
+		const own = getComputedStyle(element);
+		if (!NO_COLOR.includes(own.backgroundColor) || own.backgroundImage !== 'none') return true;
+		return ['::before', '::after'].some(pseudo => {
+			const style = getComputedStyle(element, pseudo);
+			return style.content !== 'none' && !NO_COLOR.includes(style.backgroundColor);
+		});
+	}
+
+	// Collect what must move with an icon button: the button itself plus the
+	// small elements that paint its circular backdrop, which may be a wrapper
+	// around it or a sibling placed behind it. Nothing is moved just for being
+	// small: a container only counts if it really draws a backdrop.
+	function collectIconUnit(button, iconBox) {
+		const found = new Set([button]);
+		const centerX = iconBox.left + iconBox.width / 2;
+		const centerY = iconBox.top + iconBox.height / 2;
+		let node = button;
+		for (let level = 0; level < 3 && node.parentElement; level++) {
+			const parent = node.parentElement;
+			const box = parent.getBoundingClientRect();
+			// Stop at boxless or large parents: those are layout containers.
+			if (box.width === 0 || box.height === 0) break;
+			if (box.width > MAX_ICON_BOX || box.height > MAX_ICON_BOX) break;
+			if (paintsBackdrop(parent)) found.add(parent);
+			for (const sibling of parent.children) {
+				if (sibling === node) continue;
+				const s = sibling.getBoundingClientRect();
+				const small = s.width > 0 && s.width <= MAX_ICON_BOX && s.height <= MAX_ICON_BOX;
+				const behindIcon = centerX >= s.left && centerX <= s.right &&
+					centerY >= s.top && centerY <= s.bottom;
+				if (small && behindIcon && paintsBackdrop(sibling)) found.add(sibling);
+			}
+			node = parent;
+		}
+		// An element inside another lifted element already moves with it, and
+		// lifting both would move it twice.
+		return [...found].filter(a => ![...found].some(b => b !== a && b.contains(a)));
+	}
+
+	// Let the mouse reach the video through the transparent layers Instagram
+	// stacks over it (tap-to-pause cover, caption rows). Without this the video
+	// never receives hover or clicks, so its native controls cannot appear or be
+	// used. The layers found at the control-bar height and at the middle of the
+	// video are made click-through when they span the video's width. Small links
+	// and buttons inside them keep working. Only layers ABOVE this video, at those
+	// two points, are touched, so nothing else on the page is affected.
+	function releaseVideoOverlays(video, videoBox) {
+		if (typeof document.elementsFromPoint !== 'function') return; // Very old engines.
+		const x = Math.round(videoBox.left + videoBox.width / 2);
+		const probes = [
+			Math.round(videoBox.bottom - 20), // where the control bar sits
+			Math.round(videoBox.top + videoBox.height / 2)
+		];
+		const videoArea = videoBox.width * videoBox.height;
+		for (const y of probes) {
+			// Hit-testing only works for points inside the visible window.
+			if (x < 0 || x >= window.innerWidth || y < 0 || y >= window.innerHeight) continue;
+			const stack = document.elementsFromPoint(x, y); // Topmost first.
+			const videoIndex = stack.indexOf(video);
+			for (let i = 0; i < videoIndex; i++) {
+				const layer = stack[i];
+				if (layer.contains(video)) continue; // Never disable a parent of the video.
+				// Narrow elements are controls (icons), not covers: leave them alone.
+				if (layer.getBoundingClientRect().width < videoBox.width * 0.9) continue;
+				layer.style.pointerEvents = 'none';
+				layer.setAttribute('data-igblock', 'true'); // Restored when disabled.
+				// Pointer-events is inherited, so give small interactive children
+				// (follow, links, icons) their clicks back. Large ones stay released.
+				layer.querySelectorAll('a, button, [role="button"], input, textarea').forEach(item => {
+					const box = item.getBoundingClientRect();
+					if (box.width === 0 || box.width * box.height > videoArea * 0.25) return;
+					item.style.pointerEvents = 'auto';
+					item.setAttribute('data-igclick', 'true');
 				});
 			}
 		}
-	};
+	}
 
-	// Create an observer instance linked to the callback function
-	observer = new MutationObserver(callback);
+	function liftInstagramAudioButtons() {
+		document.querySelectorAll('video[' + ADDED_MARK + ']').forEach(video => {
+			const videoBox = video.getBoundingClientRect();
+			if (videoBox.width === 0 || videoBox.height === 0) return; // Not laid out.
+			releaseVideoOverlays(video, videoBox);
 
-	// Start observing the document with the configured parameters
-	observer.observe(document.body, config);
-}
+			// Search area: the feed post, or the main content on pages without
+			// <article> (single reels). The position test below keeps only buttons
+			// that really sit over this video, so a wide root is safe.
+			const root = video.closest('article') ||
+				video.closest('main, [role="main"]') || document.body;
 
-// Scan all <video> elements and enable controls when allowed for this domain.
-function videoPlayerShowControls() {
-	const currentDomain = window.location.hostname.toLowerCase();
-	const keys = ['mode', 'excludedDomains', 'includedDomains'];
-	browser.storage.local.get(keys, function (data) {
-		const mode = data.mode === 'include' ? 'include' : 'exclude';
-		const excluded = (data.excludedDomains || []).map(d => (d || '').toLowerCase());
-		const included = (data.includedDomains || []).map(d => (d || '').toLowerCase());
+			// Both real <button> elements (the tags icon) and role="button" divs
+			// (the audio icon) are used for these controls.
+			// Only buttons that hold an icon: this skips most of the page cheaply
+			// before any layout measurement is done.
+			root.querySelectorAll('button:has(svg), [role="button"]:has(svg)').forEach(button => {
+				// Skip buttons already lifted. The lifted element carries the mark
+				// (the button itself or one of its wrappers); its inline style proves
+				// the lift still holds, since the page may re-render and wipe it.
+				const lifted = button.closest('[data-igmarginfix]');
+				if (lifted && lifted.style.transform) return;
+				const icon = button.querySelector('svg');
+				const box = button.getBoundingClientRect();
+				if (!icon || box.width > MAX_ICON_BOX) return; // Small icon buttons only.
 
-		let vidAtribs = document.getElementsByTagName("video");
-		for (const element of vidAtribs) {
-			let changeAtribs = false;
-			if (element.getAttribute("controls") === null || element.getAttribute("controls") === "false") {
-				changeAtribs = true;
+				// Must sit along the bottom edge of THIS video, on either side: the
+				// audio button is at the bottom right and the tags icon at the bottom
+				// left, and the native control bar covers both.
+				const inBottomBand = box.bottom > videoBox.bottom - videoBox.height * 0.3 &&
+					box.bottom <= videoBox.bottom + 2;
+				const insideVideo = box.left >= videoBox.left - 2 &&
+					box.right <= videoBox.right + 2;
+				if (!inBottomBand || !insideVideo) return;
+
+				// The dark circle behind the icon is not the button itself: it is a
+				// wrapper or a sibling. Lift the whole visual unit so they move together.
+				collectIconUnit(button, box).forEach(liftElement);
+
+				// The add-on switches off click handling on Instagram's overlay layers
+				// so the native controls stay usable. A button inside one of them
+				// inherits that and would stop reacting, so it is given its own
+				// clicks back. Only this small icon button, never the whole layer.
+				button.style.pointerEvents = 'auto';
+				button.setAttribute('data-igclick', 'true');
+			});
+		});
+	}
+
+	// Restore the Instagram changes made above. The 9GAG overlays were removed
+	// from the page, so they can only come back with a page reload.
+	function revertInstagramFixes() {
+		document.querySelectorAll('[data-igblock]').forEach(element => {
+			element.style.pointerEvents = '';
+			element.removeAttribute('data-igblock');
+		});
+		document.querySelectorAll('[data-igmarginfix]').forEach(element => {
+			element.style.transform = '';
+			element.removeAttribute('data-igmarginfix');
+		});
+		document.querySelectorAll('[data-igclick]').forEach(element => {
+			element.style.pointerEvents = '';
+			element.removeAttribute('data-igclick');
+		});
+	}
+
+	// Runs the fixes for the current site (no-op on every other site).
+	// These fixes depend on third-party page markup, which changes without
+	// notice. A failure here must never switch off the core feature (the video
+	// controls), so errors are contained and the page is left as it is.
+	function applySiteFixes() {
+		if (!active) return;
+		try {
+			if (isNineGag) {
+				removeOverlays9gag();
 			}
-			if (element.hasAttribute("src")) {
-				if (!element.getAttribute("src")) {
-					changeAtribs = false;
-				}
+			if (isInstagram) {
+				removeOverlaysInstagram();
+				liftInstagramAudioButtons();
 			}
-			if (!changeAtribs) continue;
-
-			let shouldEnable = false;
-			if (mode === 'include') {
-				// Only enable if domain is explicitly included (matches base or any subdomain)
-				shouldEnable = listMatchesDomain(included, currentDomain);
-			} else {
-				// Default allow unless explicitly excluded
-				shouldEnable = !listMatchesDomain(excluded, currentDomain);
-			}
-
-			if (shouldEnable) {
-				element.setAttribute("controls", "true");
-			}
-		}
-	});
-}
-
-// Returns true if any entry in list matches hostname exactly or as a suffix (subdomain)
-// Example: 'instagram.com' matches 'instagram.com', 'www.instagram.com', 'm.instagram.com'.
-function listMatchesDomain(list, hostname) {
-	const h = (hostname || '').toLowerCase();
-	return (list || []).some((entry) => {
-		const e = (entry || '').toLowerCase().replace(/^www\./, '');
-		if (!e) return false;
-		return h === e || h.endsWith('.' + e);
-	});
-}
-
-// Decide whether the extension should act on this domain based on mode and lists.
-// - Include-only mode: only enabled for domains in 'includedDomains'.
-// - Exclude mode: enabled for all domains except those in 'excludedDomains'.
-function shouldEnableOnThisDomain(callback) {
-	const current = window.location.hostname.toLowerCase();
-	const keys = ['mode', 'excludedDomains', 'includedDomains'];
-	browser.storage.local.get(keys, function (data) {
-		const mode = data.mode === 'include' ? 'include' : 'exclude';
-		const excluded = (data.excludedDomains || []).map(d => (d || '').toLowerCase());
-		const included = (data.includedDomains || []).map(d => (d || '').toLowerCase());
-
-		let shouldEnable = false;
-		if (mode === 'include') {
-			shouldEnable = listMatchesDomain(included, current);
-		} else {
-			shouldEnable = !listMatchesDomain(excluded, current);
-		}
-		callback(shouldEnable);
-	});
-}
-
-// Remove 9GAG overlay UI that may block clicks.
-function removeOverlays9gag() {
-	document.querySelectorAll(".sound-toggle, .length, .presenting").forEach(element => {
-		element.remove(); // element.style.display = "none"; <- just hiding it instead option
-	});
-}
-
-// On Instagram, block the generic overlay layers from intercepting clicks.
-// We skip elements with empty class attribute (class="") to keep wrappers clickable.
-function removeOverlaysInstagram() {
-	// Skip elements that have an explicitly empty class attribute: class=""
-	const selector = 'div[data-visualcompletion="ignore"]:not([class=""])';
-	document.querySelectorAll(selector).forEach(element => {
-		// Disable event capturing and mark as processed.
-		element.style.pointerEvents = 'none';
-		element.setAttribute('data-igblock', 'true');
-	});
-}
-
-// On Instagram, shift overlay buttons up a bit so native controls are easier to access.
-function adjustInstagramVideoOverlayButtonsMargins() {
-	// Get all elements with the classes "_aswp", "_aswq", "_aswu", "_asw_", and "_asx2".
-	const nodes = document.querySelectorAll('button._aswp._aswq._aswu._asw_._asx2');
-	nodes.forEach(element => {
-		// Check if the element's margin-bottom style is not set to 40px.
-		if (element.style.marginBottom !== '40px') {
-			// Set the margin-bottom style to 40px.
-			element.style.marginBottom = '40px';
-			// Mark the element as processed.
-			element.setAttribute('data-igmarginfix', 'true');
-		}
-	});
-}
-
-// Initial run: remove overlays only when enabled for this domain, then apply controls.
-shouldEnableOnThisDomain(function (shouldEnable) {
-	if (shouldEnable) {
-		if (window.location.hostname.includes("9gag.com")) {
-			removeOverlays9gag();
-		}
-		if (window.location.hostname.includes("instagram.com")) {
-			removeOverlaysInstagram();
-			adjustInstagramVideoOverlayButtonsMargins();
+		} catch (error) {
+			// Intentionally ignored: see the comment above.
 		}
 	}
-	videoPlayerShowControls();
-});
 
-// Setup the observer to monitor for changes in the DOM
-setupObserver();
+	// ---------- DOM observation ----------
+
+	// Process everything collected since the last frame in a single pass.
+	function flushPending() {
+		frameId = 0;
+		const nodes = pendingNodes;
+		pendingNodes = [];
+		for (const node of nodes) {
+			// Skip nodes that were detached again before this frame.
+			if (node.isConnected) processNode(node);
+		}
+		if (hasSiteFixes) applySiteFixes();
+	}
+
+	// Called for every DOM change. Kept very cheap: it only queues added
+	// elements and schedules one batched run per animation frame.
+	function onMutations(mutations) {
+		for (const mutation of mutations) {
+			for (const node of mutation.addedNodes) {
+				if (node.nodeType === Node.ELEMENT_NODE) pendingNodes.push(node);
+			}
+		}
+		scheduleFlush();
+	}
+
+	// Make sure the queued work runs in the next animation frame (once).
+	function scheduleFlush() {
+		if (pendingNodes.length > 0 && frameId === 0) {
+			frameId = requestAnimationFrame(flushPending);
+		}
+	}
+
+	// A <video> that is already on the page can receive its source later, or
+	// swap it for another one (single-page apps such as Instagram reels reuse
+	// the same element). Videos without a source are skipped on purpose, and
+	// the observer above only sees ADDED nodes, so the media's own "a source
+	// was loaded" event is used to catch them. It fires rarely, so it is cheap.
+	// The event does not bubble, hence the capturing listener on the document.
+	function onMediaSourceLoaded(event) {
+		const target = event.target;
+		if (target && target.localName === 'video') {
+			pendingNodes.push(target);
+			scheduleFlush();
+		}
+	}
+
+	// Start working on this page: handle existing videos, then watch for new ones.
+	function enable() {
+		if (active) return; // Already running.
+		active = true;
+		// Initial pass over what is already on the page.
+		for (const video of document.getElementsByTagName('video')) {
+			enableControls(video);
+		}
+		if (hasSiteFixes) applySiteFixes();
+
+		observer = new MutationObserver(onMutations);
+		// documentElement survives <body> being replaced by single-page apps.
+		observer.observe(document.documentElement, { childList: true, subtree: true });
+		document.addEventListener('loadstart', onMediaSourceLoaded, true);
+		document.addEventListener('loadedmetadata', onMediaSourceLoaded, true);
+	}
+
+	// Stop all work on this page and release queued state.
+	function disable() {
+		if (!active) return; // Never enabled (or already disabled): nothing to undo.
+		active = false;
+		if (observer) {
+			observer.disconnect();
+			observer = null;
+		}
+		document.removeEventListener('loadstart', onMediaSourceLoaded, true);
+		document.removeEventListener('loadedmetadata', onMediaSourceLoaded, true);
+		pendingNodes = [];
+		if (frameId !== 0) {
+			cancelAnimationFrame(frameId);
+			frameId = 0;
+		}
+		// Leave the page as the site made it.
+		removeAddedControls();
+		if (isInstagram) revertInstagramFixes();
+	}
+
+	// ---------- Settings ----------
+
+	// One storage read per call; the result drives enable()/disable().
+	async function syncWithSettings() {
+		const myRun = ++syncCounter;
+		try {
+			const data = await browser.storage.local.get(SETTINGS_KEYS);
+			// A newer change arrived while this read was pending: let it decide.
+			if (myRun !== syncCounter) return;
+			if (isEnabledFor(data)) {
+				enable();
+			} else {
+				disable();
+			}
+		} catch (error) {
+			// If settings cannot be read, do nothing rather than guess.
+			disable();
+		}
+	}
+
+	// Re-evaluate only when one of OUR keys changes in local storage. This lets
+	// mode/list changes take effect without a reload and costs nothing otherwise.
+	browser.storage.onChanged.addListener((changes, area) => {
+		if (area === 'local' && SETTINGS_KEYS.some(key => key in changes)) {
+			syncWithSettings();
+		}
+	});
+
+	syncWithSettings();
+})();
