@@ -32,22 +32,16 @@
 		{
 			"exclude_matches": [
 				"*://*.youtube.com/*",
+				"*://youtu.be/*",
 				"*://*.netflix.com/*",
 				"*://*.vimeo.com/*",
 				"*://*.dailymotion.com/*",
 				"*://*.hulu.com/*",
 				"*://*.twitch.tv/*",
-				"*://youtube.com/*",
-				"*://youtu.be/*",
-				"*://netflix.com/*",
-				"*://vimeo.com/*",
-				"*://dailymotion.com/*",
-				"*://hulu.com/*",
-				"*://twitch.tv/*",
 				"*://*.rumble.com/*",
 				"*://*.facebook.com/*"
 			],
-			"matches": ["<all_urls>", "*://*/*"],
+			"matches": ["<all_urls>"],
 			"js": ["showvideocontrolsbydefault.js"]
 		}
 	]
