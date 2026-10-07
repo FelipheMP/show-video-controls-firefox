@@ -369,13 +369,41 @@ a:focus-visible {
 	overflow-wrap: anywhere;
 }
 
+/* Remove button: an outlined button like the other controls at rest, turning
+   into a soft red "danger" button on hover, keyboard focus and press. The border
+   stays 1px in every state, so nothing shifts when the colors change. */
 .remove-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
 	flex-shrink: 0;
 	min-width: 44px;
-	color: var(--secondary-color);
-	border-color: transparent;
-	padding: 8px;
+	padding: 9px 12px;
 	font-size: 12px;
+}
+
+.remove-button svg {
+	width: 16px;
+	height: 16px;
+	flex-shrink: 0;
+}
+
+/* Hover is limited to devices that really hover, so a tap on a phone does not
+   leave the button stuck in the red state. */
+@media (hover: hover) {
+	.remove-button:hover {
+		border-color: transparent;
+		background-color: var(--warning-surface-color);
+		color: var(--warning-color);
+	}
+}
+
+.remove-button:focus-visible,
+.remove-button:active {
+	border-color: transparent;
+	background-color: var(--warning-surface-color);
+	color: var(--warning-color);
 }
 
 .empty-list {

@@ -294,12 +294,35 @@ function updateDomainList() {
 		const deleteButton = document.createElement('button');
 		deleteButton.type = 'button';
 		deleteButton.className = 'remove-button';
-		deleteButton.textContent = translate('removeDomain');
+		// Icon and text are built with DOM methods (no innerHTML); the icon is
+		// decorative, so the accessible name still comes from the aria-label below.
+		const label = document.createElement('span');
+		label.textContent = translate('removeDomain');
+		deleteButton.append(createTrashIcon(), label);
 		deleteButton.setAttribute('aria-label', translate('removeDomainLabel', { domain }));
 		deleteButton.addEventListener('click', () => removeDomain(domain));
 		li.append(name, deleteButton);
 		list.append(li);
 	});
+}
+
+// Small trash icon for the Remove buttons, drawn like the other popup icons
+// (thin stroke that follows the text color, so it changes with hover and theme).
+function createTrashIcon() {
+	const svgNamespace = 'http://www.w3.org/2000/svg';
+	const icon = document.createElementNS(svgNamespace, 'svg');
+	icon.setAttribute('viewBox', '0 0 24 24');
+	icon.setAttribute('fill', 'none');
+	icon.setAttribute('stroke', 'currentColor');
+	icon.setAttribute('stroke-width', '1.7');
+	icon.setAttribute('stroke-linecap', 'round');
+	icon.setAttribute('stroke-linejoin', 'round');
+	icon.setAttribute('aria-hidden', 'true');
+	icon.setAttribute('focusable', 'false');
+	const path = document.createElementNS(svgNamespace, 'path');
+	path.setAttribute('d', 'M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v5M14 11v5');
+	icon.append(path);
+	return icon;
 }
 
 async function removeDomain(domain) {
