@@ -1,5 +1,9 @@
 # Chrome Web Store listing
 
+> **Not in use for now.** The current plan is to publish on Edge Add-ons only (see
+> [edge-addons.md](edge-addons.md)). This file is kept ready in case the extension is
+> published on the Chrome Web Store later, which requires a one-time developer fee.
+
 Package: build with `node scripts/build-chromium.mjs`, then zip the **contents** of
 `dist/chromium/` (the CI also attaches this zip to every GitHub release).
 The same package is used for Edge. See [edge-addons.md](edge-addons.md).

@@ -1,11 +1,11 @@
-# Show Video Controls for Firefox
+# Show Video Controls
 
 [![Release](https://github.com/FelipheMP/show-video-controls-firefox/actions/workflows/release.yml/badge.svg)](https://github.com/FelipheMP/show-video-controls-firefox/actions/workflows/release.yml)
 
 **Stop hunting for video controls. Start watching your way.**
 
 A video starts playing, but its playback controls are missing. Show Video Controls
-for Firefox automatically enables native controls on supported HTML videos so you
+automatically enables native controls on supported HTML videos so you
 can pause, seek, adjust the volume, or enter fullscreen when the player and platform
 support it.
 
@@ -19,8 +19,9 @@ or “Show controls” steps for each video.
 
 ## Built for the way you browse
 
-- **Firefox on desktop and Android.** Manage your settings with a compact interface
-  and comfortable touch targets.
+- **Firefox, Chrome and Edge.** Firefox on desktop and Android, and Chromium-based
+  browsers such as Chrome and Edge on desktop. Manage your settings with a compact
+  interface and comfortable touch targets.
 - **Controls that appear automatically.** The add-on watches for dynamically
   added videos as you browse supported pages.
 - **Light on resources.** On sites where the add-on is turned off, it does no work
@@ -34,8 +35,8 @@ or “Show controls” steps for each video.
   between sessions.
 - **English or Brazilian Portuguese.** Pick **🇺🇸 en-US** or **🇧🇷 pt-BR** from the
   language menu. Switching languages preserves the domain you are typing.
-- **Settings stored locally.** Your site lists, language, and theme stay in Firefox's
-  local add-on storage.
+- **Settings stored locally.** Your site lists, language, and theme stay in the browser's
+  local extension storage.
 
 ## A cleaner way to manage your controls
 
@@ -47,12 +48,15 @@ or “Show controls” steps for each video.
 ## Get started
 
 1. Install the add-on from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/show-video-controls-firefox/).
+   For Chrome or Edge, use the Chromium package (see [Run it in Chrome or Edge](#run-it-in-chrome-or-edge)).
+   From the next release on, the GitHub release also includes it as a zip.
 2. Visit a page with a supported HTML video. Native controls are enabled automatically
    unless the site is excluded.
-3. Open **Show Video Controls** from Firefox's extensions menu to customize where it runs.
+3. Open **Show Video Controls** from the browser's extensions menu to customize where it runs.
 
 The current source requires **Firefox 140 or later on desktop** and **Firefox 142
-or later on Android**, as declared in [manifest.json](manifest.json).
+or later on Android**, as declared in [manifest.json](manifest.json). The Chromium package requires
+**Chrome or Edge 105 or later**, because the popup and page script use `:has()`.
 
 ### Choose where it runs
 
@@ -98,7 +102,7 @@ low-power devices.
 - **Only new content is inspected.** When a page adds elements, the add-on checks just
   those elements for videos, never the whole document.
 - **Work is batched.** Changes are handled at most once per animation frame, and
-  Firefox pauses animation frames in background tabs, so hidden tabs use no extra CPU.
+  Browsers pause animation frames in background tabs, so hidden tabs use no extra CPU.
 
 ## Compatibility and limitations
 
@@ -110,14 +114,15 @@ It does not replace a website's player or add a new playback engine.
 - **Some sites are excluded by design.** The manifest excludes several major video
   services, including YouTube, Netflix, Vimeo, and Twitch. Adding one of those sites
   to your allowed list does not override the manifest exclusions.
-- **Protected Firefox pages cannot be modified.** The site-list form also rejects
+- **Protected browser pages cannot be modified** (such as `about:` pages in Firefox or
+  `edge://` and `chrome://` pages in Chromium browsers). The site-list form also rejects
   local domains and IP addresses.
-- **Controls vary by platform and media.** Available actions depend on Firefox,
+- **Controls vary by platform and media.** Available actions depend on the browser,
   the video, and the surrounding player.
 
 See [manifest.json](manifest.json) for the complete URL exclusions. If controls
 are missing on another site, [report the issue](https://github.com/FelipheMP/show-video-controls-firefox/issues/new?template=bug_report.md)
-with the page URL, Firefox version, platform, and steps to reproduce it.
+with the page URL, browser and version, platform, and steps to reproduce it.
 
 ## Permissions and privacy
 
@@ -223,7 +228,7 @@ For an additional code overview,
 
 ## Credits and license
 
-This is an **unofficial Firefox adaptation** of *Show Video Controls by Default*,
+This is an **unofficial adaptation** (Firefox, Chrome and Edge) of *Show Video Controls by Default*,
 originally created by **marcintracz.official** for Chrome.
 
 Licensed under the [GNU General Public License v3.0](LICENSE).
