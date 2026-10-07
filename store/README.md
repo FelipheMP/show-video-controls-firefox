@@ -12,6 +12,9 @@ are shipped inside the extension packages.
 | [firefox-add-ons.md](firefox-add-ons.md) | Firefox Add-ons fields, version notes, reviewer notes. |
 | [../PRIVACY.md](../PRIVACY.md) | Privacy policy linked from every store (English and Brazilian Portuguese). |
 
+**Current plan:** publish on Edge Add-ons (free) with the Chromium package. The Chrome Web Store
+texts in [chrome-web-store.md](chrome-web-store.md) are kept ready in case that changes later.
+
 The extension name and the one-line summary live in [`_locales/`](../_locales), not here,
 so the extension page and the store always agree. Edit them there.
 
@@ -44,8 +47,8 @@ Firefox Add-ons, is removed from the Chromium package.
 - Confirm the original *Show Video Controls by Default* extension's license and that the
   name used in the Chromium build ([`scripts/build-chromium.mjs`](../scripts/build-chromium.mjs))
   is clearly different from it and does not mention Firefox.
-- Register a Chrome Web Store developer account (one-time fee) and a Microsoft Partner Center
-  account for Edge Add-ons (free).
+- Register a Microsoft Partner Center account for Edge Add-ons (free). A Chrome Web Store
+  developer account (one-time fee) is only needed if you decide to publish there later.
 - Confirm the image sizes and field limits below in each dashboard, since stores change them.
 
 ## Images
