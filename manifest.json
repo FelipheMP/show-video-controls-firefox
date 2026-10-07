@@ -1,12 +1,14 @@
 {
-	"manifest_version": 2,
-	"name": "Show Video Controls by Default for Firefox",
+	"manifest_version": 3,
+	"default_locale": "en",
+	"name": "__MSG_extName__",
+	"description": "__MSG_extDescription__",
 	"version": "5.2.0",
 	"permissions": ["activeTab", "storage"],
-	"browser_action": {
+	"host_permissions": ["<all_urls>"],
+	"action": {
 		"default_popup": "popup.html"
 	},
-	"description": "This extension automatically enables video controls when playing html <video></video> webm videos.",
 	"icons": {
 		"128": "icons/icon128.png",
 		"16": "icons/icon16.png",
