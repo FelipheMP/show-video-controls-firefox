@@ -10,8 +10,8 @@
 //      declared in content_scripts, and leaving them out keeps the permission
 //      warning and the store review as small as possible.
 //   2. The extension name is replaced in every _locales/*/messages.json: the
-//      Firefox name mentions "Firefox", which Chromium stores do not accept, and
-//      the original Chrome extension this project is based on uses the other one.
+//      Firefox name mentions "Firefox", which Chromium stores do not accept. The
+//      Chromium name is "Show Video Controls", the same name the popup shows.
 //   3. minimum_chrome_version is added (the page script and popup use :has()).
 //   4. The popup's "Rate extension" link, which points to Firefox Add-ons, is
 //      removed (or pointed at a Chromium store page, see CHROMIUM_RATE_URL).
@@ -32,8 +32,8 @@ import { fileURLToPath } from 'node:url';
 // Names shown by Chrome and Edge, per _locales folder. Chrome allows up to 75
 // characters. Every folder in _locales must have an entry (checked below).
 const CHROMIUM_NAMES = {
-	en: 'Always Show Video Controls',
-	pt_BR: 'Sempre Mostrar Controles de Vídeo'
+	en: 'Show Video Controls',
+	pt_BR: 'Show Video Controls'
 };
 
 // Oldest Chromium that supports every CSS/JS feature the extension relies on.

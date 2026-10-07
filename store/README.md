@@ -44,9 +44,10 @@ Firefox Add-ons, is removed from the Chromium package.
 
 ## Before the first Chromium submission
 
-- Confirm the original *Show Video Controls by Default* extension's license and that the
-  name used in the Chromium build ([`scripts/build-chromium.mjs`](../scripts/build-chromium.mjs))
-  is clearly different from it and does not mention Firefox.
+- Confirm the original *Show Video Controls by Default* extension's license. The Chromium
+  name is "Show Video Controls" ([`scripts/build-chromium.mjs`](../scripts/build-chromium.mjs)),
+  which is very close to the original's name, so a store may flag it as confusing or a
+  duplicate. If that happens, change the name in that script and in the store texts.
 - Register a Microsoft Partner Center account for Edge Add-ons (free). A Chrome Web Store
   developer account (one-time fee) is only needed if you decide to publish there later.
 - Confirm the image sizes and field limits below in each dashboard, since stores change them.

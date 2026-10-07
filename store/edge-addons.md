@@ -19,7 +19,7 @@ Name and short description come from the package (`_locales/`), so they match Ch
 
 ### English (United States)
 
-**Name** *(from the package)*: Always Show Video Controls
+**Name** *(from the package)*: Show Video Controls
 
 **Description**: paste [description.en.md](description.en.md), then add this line at the end:
 
@@ -41,7 +41,7 @@ video settings
 
 ### Português (Brasil)
 
-**Nome** *(do pacote)*: Sempre Mostrar Controles de Vídeo
+**Nome** *(do pacote)*: Show Video Controls
 
 **Descrição**: cole o conteúdo de [description.pt-BR.md](description.pt-BR.md) e acrescente esta linha no final:
 
