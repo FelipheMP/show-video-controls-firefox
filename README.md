@@ -129,11 +129,15 @@ with the page URL, Firefox version, platform, and steps to reproduce it.
 The page script is registered for all websites (`<all_urls>`) through the manifest's
 `content_scripts` entry, minus the exclusions listed there. That match is what lets it
 find supported video elements and enable controls on pages where the add-on is allowed
-to run. The add-on does not request separate host permissions.
+to run. The Firefox manifest also lists `<all_urls>` under `host_permissions`, which
+Manifest V3 on Firefox needs for a page script to run. The Chromium package does not
+declare it, because Chromium does not require it.
 
 The add-on code does not send browsing activity or settings to an analytics
 service. The manifest declares that no data collection is required. The optional
-support and review links open GitHub Sponsors, Ko-fi, and Firefox Add-ons in a new tab.
+support and review links open GitHub Sponsors, Ko-fi, and Firefox Add-ons in a new tab
+(the Chromium package has no review link until a store page exists). See the full
+[privacy policy](PRIVACY.md).
 
 ## Help this project grow
 
@@ -151,8 +155,9 @@ or [suggest an improvement](https://github.com/FelipheMP/show-video-controls-fir
 
 ## Develop and contribute
 
-The add-on uses plain HTML, CSS, and JavaScript. **No build step or UI framework
-is required.**
+The add-on uses plain HTML, CSS, and JavaScript, with Manifest V3. **No build step or
+UI framework is required** to run it in Firefox. Chrome and Edge use a package derived
+from the same source by a small, dependency-free Node.js script.
 
 ### Run the source locally
 
@@ -164,11 +169,25 @@ is required.**
 Temporary installations are removed when Firefox restarts. For device testing,
 follow Mozilla's [Firefox for Android add-on development guide](https://extensionworkshop.com/documentation/develop/developing-extensions-for-firefox-for-android/).
 
+### Run it in Chrome or Edge
+
+1. Run `node scripts/build-chromium.mjs` (Node.js 18 or later). It writes `dist/chromium/`.
+2. Open `chrome://extensions` (or `edge://extensions`) and turn on **Developer mode**.
+3. Select **Load unpacked** and choose the `dist/chromium` folder.
+
+Run the script again after every change, then reload the extension. The package differs
+from the Firefox source in a few documented ways, listed at the top of the script.
+
 ### Find your way around
 
 | File | Responsibility |
 | --- | --- |
-| [manifest.json](manifest.json) | Firefox requirements, permissions, and script registration. |
+| [manifest.json](manifest.json) | Firefox requirements, permissions, and script registration (Manifest V3). |
+| [_locales](_locales) | Extension name and summary in English and Brazilian Portuguese. |
+| [scripts/build-chromium.mjs](scripts/build-chromium.mjs) | Builds the Chrome and Edge package into `dist/chromium/`. |
+| [web-ext-config.cjs](web-ext-config.cjs) | Keeps non-add-on files out of the Firefox package. |
+| [store](store) | Store listing texts (Chrome, Edge, Firefox) in English and Brazilian Portuguese. |
+| [PRIVACY.md](PRIVACY.md) | Privacy policy linked from the stores. |
 | [showvideocontrolsbydefault.js](showvideocontrolsbydefault.js) | Page script: site matching, video controls, and site-specific overlay handling. |
 | [popup.html](popup.html) | Settings layout, accessible controls, and contribution links. |
 | [css/styles.css](css/styles.css) | Responsive layout and light/dark theme tokens. |
@@ -178,6 +197,9 @@ follow Mozilla's [Firefox for Android add-on development guide](https://extensio
 Keep changes readable and commented. Add matching translation keys to both
 language dictionaries, and preserve the existing `mode`, `excludedDomains`, and
 `includedDomains` storage keys. The `language` and `theme` keys hold UI preferences.
+Use the `api` alias (`globalThis.browser ?? globalThis.chrome`) for extension APIs, never
+`browser.*` or `chrome.*` directly, so the same code runs on every browser. If a change
+affects behavior that the [store texts](store/README.md) describe, update them in both languages.
 
 When changing the page script, keep it cheap on the pages where it does nothing:
 no observers, timers, or scans while a site is disabled, no storage reads inside
@@ -186,7 +208,7 @@ DOM callbacks, and no work on nodes that were not added.
 ### Check your changes
 
 - Test in **Firefox desktop and Firefox for Android**. A Chromium-only check is not
-  a substitute for either target.
+  a substitute for either target. Also load the Chromium package in Chrome or Edge.
 - Check both languages and all three themes, including keyboard navigation and
   narrow screens with the on-screen keyboard open.
 - Add and remove sites, switch modes, and reopen the popup to verify persistence.
@@ -194,6 +216,7 @@ DOM callbacks, and no work on nodes that were not added.
   change without a reload.
 - Verify controls on a supported page and confirm that excluded sites stay excluded.
 - With Mozilla's `web-ext` available, run `web-ext lint` from the repository root.
+  It checks the Firefox package only; the Chromium package is checked by loading it.
 
 For an additional code overview,
 [explore the project on DeepWiki](https://deepwiki.com/FelipheMP/show-video-controls-firefox).

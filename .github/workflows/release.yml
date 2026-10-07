@@ -71,6 +71,21 @@ jobs:
 
           echo "file=$FILE" >> "$GITHUB_OUTPUT"
 
+      # The Chromium package (Chrome, Edge) is attached to the GitHub release so
+      # it can be uploaded to those stores. Uploading stays a manual, reviewed step.
+      - name: Build Chromium package
+        if: steps.tag_check.outputs.exists == 'false'
+        shell: bash
+        run: |
+          node scripts/build-chromium.mjs
+
+          mkdir -p web-ext-artifacts
+          CHROMIUM_ZIP="web-ext-artifacts/show-video-controls-chromium-${{ steps.version.outputs.version }}.zip"
+          (cd dist/chromium && zip -r -X "$GITHUB_WORKSPACE/$CHROMIUM_ZIP" .)
+
+          echo "chromium_file=$CHROMIUM_ZIP" >> "$GITHUB_OUTPUT"
+        id: chromium
+
       - name: Submit to Firefox Add-ons
         if: steps.tag_check.outputs.exists == 'false'
         env:
@@ -102,6 +117,7 @@ jobs:
         run: |
           gh release create "${{ steps.version.outputs.tag }}" \
             "${{ steps.artifact.outputs.file }}" \
+            "${{ steps.chromium.outputs.chromium_file }}" \
             --verify-tag \
             --title "${{ steps.version.outputs.tag }}" \
             --generate-notes

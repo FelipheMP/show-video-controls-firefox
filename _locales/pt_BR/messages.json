@@ -1,0 +1,10 @@
+{
+	"extName": {
+		"message": "Show Video Controls by Default for Firefox",
+		"description": "Nome da extensão na página do Firefox Add-ons. O build para Chromium o substitui (veja scripts/build-chromium.mjs)."
+	},
+	"extDescription": {
+		"message": "Ativa automaticamente os controles nativos do navegador em vídeos HTML5, sem precisar clicar em \"Mostrar controles\" toda vez.",
+		"description": "Resumo curto exibido na página da loja e na tela de extensões. O Chrome limita a 132 caracteres."
+	}
+}

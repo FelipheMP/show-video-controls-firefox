@@ -3,8 +3,12 @@
 // =============================
 // This file powers the popup UI: it lets the user switch between two modes
 // (exclude vs include-only) and manage separate domain lists for each mode.
-// All data is persisted using browser.storage.local so choices survive reloads.
+// All data is persisted using storage.local so choices survive reloads.
 // Language and theme are UI preferences; existing mode/list keys are unchanged.
+
+// Firefox exposes the promise-based `browser` namespace; Chrome, Edge and other
+// Chromium browsers expose `chrome`, which also returns promises in Manifest V3.
+const api = globalThis.browser ?? globalThis.chrome;
 
 const state = {
 	mode: 'exclude',
@@ -42,7 +46,7 @@ function extractDomain(url) {
 // Prefill the domain input field with the current page's domain.
 async function prefillCurrentDomain() {
 	try {
-		const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+		const tabs = await api.tabs.query({ active: true, currentWindow: true });
 		const domain = extractDomain(tabs[0]?.url);
 		const input = document.getElementById('domainInput');
 
@@ -162,7 +166,7 @@ async function saveSettings(changes) {
 	const focusedElement = document.activeElement;
 	setBusy(true);
 	try {
-		await browser.storage.local.set(changes);
+		await api.storage.local.set(changes);
 		Object.assign(state, changes);
 		return true;
 	} catch (error) {
@@ -329,7 +333,7 @@ function renderFeedback() {
 async function initializePopup() {
 	setBusy(true);
 	try {
-		const data = await browser.storage.local.get(Object.keys(state));
+		const data = await api.storage.local.get(Object.keys(state));
 		state.mode = data.mode === 'include' ? 'include' : 'exclude';
 		state.language = data.language === 'pt-BR' ? 'pt-BR' : 'en';
 		state.theme = ['light', 'dark'].includes(data.theme) ? data.theme : 'system';

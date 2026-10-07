@@ -16,13 +16,19 @@
 //   and batches the work into at most one run per animation frame. Browsers
 //   pause animation frames in background tabs, so hidden tabs cost nothing.
 //
-// Behavior is controlled by values stored in browser.storage.local:
+// Behavior is controlled by values stored in the extension's local storage
+// (storage.local, reached through the `api` alias defined below):
 // - mode: 'exclude' (default) or 'include'.
 // - excludedDomains: in exclude mode, the sites where the add-on stays off.
 // - includedDomains: in include mode, the only sites where the add-on runs.
 
 (() => {
 	'use strict';
+
+	// Firefox exposes the promise-based `browser` namespace; Chrome, Edge and
+	// other Chromium browsers expose `chrome`, which also returns promises in
+	// Manifest V3. Resolved once, inside this closure, so nothing leaks into the page.
+	const api = globalThis.browser ?? globalThis.chrome;
 
 	const SETTINGS_KEYS = ['mode', 'excludedDomains', 'includedDomains'];
 
@@ -397,7 +403,7 @@
 	async function syncWithSettings() {
 		const myRun = ++syncCounter;
 		try {
-			const data = await browser.storage.local.get(SETTINGS_KEYS);
+			const data = await api.storage.local.get(SETTINGS_KEYS);
 			// A newer change arrived while this read was pending: let it decide.
 			if (myRun !== syncCounter) return;
 			if (isEnabledFor(data)) {
@@ -413,7 +419,7 @@
 
 	// Re-evaluate only when one of OUR keys changes in local storage. This lets
 	// mode/list changes take effect without a reload and costs nothing otherwise.
-	browser.storage.onChanged.addListener((changes, area) => {
+	api.storage.onChanged.addListener((changes, area) => {
 		if (area === 'local' && SETTINGS_KEYS.some(key => key in changes)) {
 			syncWithSettings();
 		}
