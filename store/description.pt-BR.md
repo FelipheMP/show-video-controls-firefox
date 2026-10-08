@@ -31,7 +31,7 @@ BOM SABER
 • Ela fica desligada de propósito no YouTube, Netflix, Vimeo, Dailymotion, Hulu, Twitch, Rumble e Facebook.
 • Os navegadores não permitem extensões nas próprias páginas internas nem nas lojas de extensões.
 
-Encontrou um site em que não funciona? Abra uma issue com o endereço da página e a versão do seu navegador: https://github.com/FelipheMP/show-video-controls-firefox/issues
+Encontrou um site em que não funciona? Abra uma issue com o endereço da página e a versão do seu navegador: https://github.com/FelipheMP/auto-on-video-controls/issues
 
 Se ela facilita a sua navegação, você pode apoiar o desenvolvimento em https://github.com/sponsors/FelipheMP ou https://ko-fi.com/coreboolean
 

@@ -7,13 +7,18 @@ are shipped inside the extension packages.
 | --- | --- |
 | [description.en.md](description.en.md) | Long description, English. Plain text, shared by all three stores. |
 | [description.pt-BR.md](description.pt-BR.md) | Long description, Brazilian Portuguese. |
-| [chrome-web-store.md](chrome-web-store.md) | Chrome Web Store fields, permission justifications, review test steps. |
+| [chrome-web-store.md](chrome-web-store.md) | Chrome Web Store fields, permission justifications, review test steps (not in use). |
 | [edge-addons.md](edge-addons.md) | Microsoft Edge Add-ons fields, search terms, certification notes. |
 | [firefox-add-ons.md](firefox-add-ons.md) | Firefox Add-ons fields, version notes, reviewer notes. |
 | [../PRIVACY.md](../PRIVACY.md) | Privacy policy linked from every store (English and Brazilian Portuguese). |
 
-**Current plan:** publish on Edge Add-ons (free) with the Chromium package. The Chrome Web Store
-texts in [chrome-web-store.md](chrome-web-store.md) are kept ready in case that changes later.
+**Where the extension is published:**
+
+| Store | Status | Address |
+| --- | --- | --- |
+| Firefox Add-ons | Published, updated by the release workflow | https://addons.mozilla.org/firefox/addon/show-video-controls-firefox/ |
+| Microsoft Edge Add-ons | Published (first version approved), updated by the release workflow | https://microsoftedge.microsoft.com/addons/detail/konenpojbbpaghcelhkempoeamohjgjd |
+| Chrome Web Store | Not planned (one-time developer fee). The texts in [chrome-web-store.md](chrome-web-store.md) are kept ready in case that changes. | none |
 
 The extension name and the one-line summary live in [`_locales/`](../_locales), not here,
 so the extension page and the store always agree. Edit them there.
@@ -26,33 +31,59 @@ changes apply without a reload, the list of excluded sites). When the code or
 
 ## Release flow
 
-1. Raise `version` in [`manifest.json`](../manifest.json) and push to `master`. The release
-   workflow signs and submits the Firefox package and attaches both zips to a GitHub release.
-2. Download the Chromium zip (`show-video-controls-chromium-<version>.zip`) from that release.
-3. Upload it manually to the Chrome Web Store and to Microsoft Edge Add-ons, using the field
-   values in this folder. The first submission has to be manual; later ones can be automated
-   with each store's API once the listing exists.
+1. Raise `version` in [`manifest.json`](../manifest.json) and push to `master`.
+   The version must be higher than the one already published on **both** stores
+   (the stores reject an equal or lower version).
+2. The [release workflow](../.github/workflows/release.yml) then, for that version:
+   lints and builds the Firefox package and submits it to Firefox Add-ons; builds the
+   Chromium package; creates the tag and the GitHub release with both zips
+   (`auto-on-video-controls-firefox-<version>.zip` and `auto-on-video-controls-chromium-<version>.zip`);
+   and, in a second job, uploads the Chromium zip to Microsoft Edge Add-ons and submits it for review.
+   Both stores review the update before it goes live.
+3. A version that already has a tag is skipped, so re-running the workflow is safe. If only the
+   Edge job failed (for example an expired API key), fix the cause and use **Re-run failed jobs**:
+   the Chromium package is kept as a workflow artifact for 7 days. After that, upload the zip from
+   the GitHub release by hand in Partner Center.
+
+Store texts and images are not part of the release: edit them in each store's dashboard,
+using the values in this folder.
 
 To build the Chromium package locally: `node scripts/build-chromium.mjs`, then zip the
 contents of `dist/chromium/`.
 
-## After the first Chromium publication
+### Setting up the Edge publishing job (once)
 
-Set `CHROMIUM_RATE_URL` in [`scripts/build-chromium.mjs`](../scripts/build-chromium.mjs)
-to the store page address. Until then the popup's "Rate extension" link, which points to
-Firefox Add-ons, is removed from the Chromium package.
+The job needs the Edge Add-ons API enabled for the extension (Partner Center, Microsoft Edge,
+**Publish API**, which shows the Client ID and creates an API key; the key expires, so note its
+expiry date). Then, in the GitHub repository:
 
-## Before the first Chromium submission
+| Where | Name | Value |
+| --- | --- | --- |
+| Settings, Environments, **Edge Add-ons APIs**, secret | `EDGE_CLIENT_ID` | Client ID from the Publish API page |
+| Same environment, secret | `EDGE_API_KEY` | API key from the Publish API page |
+| Settings, Secrets and variables, Actions, **Variables** | `EDGE_PRODUCT_ID` | Product ID (a GUID) from the extension's overview page in Partner Center |
 
-- Confirm the original *Show Video Controls by Default* extension's license.
-- The name is "Auto-On Video Controls" in every browser (set in [`_locales/`](../_locales)), chosen because Edge policy 1.1.2
-  rejects names or icons similar to other extensions (an earlier version was rejected for that).
-  Search the store for the name before submitting.
-- The listing links to a repository whose name contains "firefox", and the policy says a listing
-  must not reference other browsers. Consider renaming the repository (GitHub redirects the old
-  address), or ask the reviewer whether it is a problem.
-- Register a Microsoft Partner Center account for Edge Add-ons (free). A Chrome Web Store
-  developer account (one-time fee) is only needed if you decide to publish there later.
+Until `EDGE_PRODUCT_ID` exists the Edge job is skipped. Firefox uses the secrets `AMO_API_KEY` and
+`AMO_API_SECRET` in the **Firefox Add-ons APIs** environment. The upload script,
+[`scripts/publish-edge.mjs`](../scripts/publish-edge.mjs), can be checked locally without sending anything:
+`EDGE_CLIENT_ID=x EDGE_API_KEY=x EDGE_PRODUCT_ID=<guid> node scripts/publish-edge.mjs package.zip --dry-run`.
+
+## Rate link
+
+The popup's "Rate extension" link points to Firefox Add-ons in the Firefox package. The
+Chromium package points it to the Edge Add-ons page: `CHROMIUM_RATE_URL` in
+[`scripts/build-chromium.mjs`](../scripts/build-chromium.mjs).
+
+## Naming and policy notes
+
+- The name is "Auto-On Video Controls" in every browser (set in [`_locales/`](../_locales)), chosen because
+  Edge policy 1.1.2 rejects names or icons similar to other extensions (an earlier version was rejected
+  for that). Keep the name and the icon distinct from the original extension's.
+- The repository is named `auto-on-video-controls` (it was `show-video-controls-firefox`), so listing links
+  do not reference another browser. Old repository addresses redirect on GitHub. The Firefox Add-ons
+  address still uses its original slug, which can only be changed on that site.
+- Confirm the original *Show Video Controls by Default* extension's license (still open).
+- If the extension is ever published on the Chrome Web Store, a one-time developer fee applies.
 - Confirm the image sizes and field limits below in each dashboard, since stores change them.
 
 ## Images

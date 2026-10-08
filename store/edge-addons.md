@@ -1,18 +1,20 @@
 # Microsoft Edge Add-ons listing
 
-Package: the **same Chromium zip** used for the Chrome Web Store (see
-[chrome-web-store.md](chrome-web-store.md)). Uploading is free of charge.
-The listing is edited in the [Partner Center](https://partner.microsoft.com/dashboard/microsoftedge/overview).
-Name and short description come from the package (`_locales/`), so they match Chrome.
+**Published:** https://microsoftedge.microsoft.com/addons/detail/konenpojbbpaghcelhkempoeamohjgjd
+
+Package: the Chromium zip built by `scripts/build-chromium.mjs`, attached to every GitHub release and
+uploaded to Edge by the release workflow (see [README.md](README.md#release-flow)). Uploading is free of charge.
+The listing's texts and images are edited in the [Partner Center](https://partner.microsoft.com/dashboard/microsoftedge/overview).
+Name and short description come from the package (`_locales/`), so they match the Firefox listing.
 
 ## Properties
 
 | Field | Value |
 | --- | --- |
 | Category | Productivity |
-| Website URL | https://github.com/FelipheMP/show-video-controls-firefox |
-| Support contact | https://github.com/FelipheMP/show-video-controls-firefox/issues |
-| Privacy policy URL | https://github.com/FelipheMP/show-video-controls-firefox/blob/master/PRIVACY.md |
+| Website URL | https://github.com/FelipheMP/auto-on-video-controls |
+| Support contact | https://github.com/FelipheMP/auto-on-video-controls/issues |
+| Privacy policy URL | https://github.com/FelipheMP/auto-on-video-controls/blob/master/PRIVACY.md |
 | Mature content | No |
 
 ## Store listings
@@ -71,7 +73,7 @@ Written in English because the certification team reads it.
 >
 > Then click the toolbar icon: the domain `example.com` is prefilled. Select "Add site" and the controls disappear from the open page, because the site is now excluded. Select "Remove" and they return.
 >
-> The extension makes no network requests, collects no data and stores only its settings locally. Permissions: `storage` (settings), `activeTab` (prefill the current domain in the popup) and a content script on all sites, needed to find video elements. The source is plain JavaScript with no build step: https://github.com/FelipheMP/show-video-controls-firefox
+> The extension makes no network requests, collects no data and stores only its settings locally. Permissions: `storage` (settings), `activeTab` (prefill the current domain in the popup) and a content script on all sites, needed to find video elements. The source is plain JavaScript with no build step: https://github.com/FelipheMP/auto-on-video-controls
 >
 > A much older version of this extension was rejected under policy 1.1.2 (similarity to another product). This version uses a different name and an original icon, and adds what the listing of the product it is based on does not describe: per-site allow and block lists with two modes, settings that apply to open pages without a reload, a design that does no work on sites where it is turned off, small fixes for overlays on 9GAG and Instagram, light and dark themes, and an English and Brazilian Portuguese interface. It is open source (GPLv3), and its description credits the original author.
 

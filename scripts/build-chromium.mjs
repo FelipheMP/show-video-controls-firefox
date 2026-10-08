@@ -34,9 +34,9 @@ const MINIMUM_CHROME_VERSION = '105';
 
 // Where the popup's "Rate extension" link goes in the Chromium package. The
 // source popup links to Firefox Add-ons, which is wrong for Chrome and Edge users.
-// While this is null the link is removed. Once a store page exists, set its URL
-// here (https only) and the link is kept and pointed at it.
-const CHROMIUM_RATE_URL = null;
+// Set to the Microsoft Edge Add-ons listing. Set it to null to remove the link
+// (for example while no store page exists). Only https URLs are accepted.
+const CHROMIUM_RATE_URL = 'https://microsoftedge.microsoft.com/addons/detail/konenpojbbpaghcelhkempoeamohjgjd';
 
 // Matches the Firefox Add-ons link in popup.html, through its closing </a>.
 const FIREFOX_RATE_LINK = /<a class="footer-secondary" href="https:\/\/addons\.mozilla\.org[^"]*"[\s\S]*?<\/a>\s*/;

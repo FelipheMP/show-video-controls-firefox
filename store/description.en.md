@@ -31,7 +31,7 @@ GOOD TO KNOW
 • It is off by design on YouTube, Netflix, Vimeo, Dailymotion, Hulu, Twitch, Rumble and Facebook.
 • Browsers do not allow extensions on their own internal pages or on extension stores.
 
-Found a site where it does not work? Open an issue with the page address and your browser version: https://github.com/FelipheMP/show-video-controls-firefox/issues
+Found a site where it does not work? Open an issue with the page address and your browser version: https://github.com/FelipheMP/auto-on-video-controls/issues
 
 If it makes your browsing easier, you can support development at https://github.com/sponsors/FelipheMP or https://ko-fi.com/coreboolean
 
