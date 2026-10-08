@@ -1,7 +1,7 @@
 # Firefox Add-ons (AMO) listing
 
 Use this to update the existing listing at
-https://addons.mozilla.org/firefox/addon/show-video-controls-firefox/
+https://addons.mozilla.org/firefox/addon/auto-on-video-controls/
 (Developer Hub, **Edit Product Page**). Package: `web-ext build` from the repository root.
 
 Name and summary also come from the manifest (`_locales/`), but AMO stores its own
@@ -13,10 +13,10 @@ copy of each, so update them in the Developer Hub as well.
 | --- | --- |
 | Categories (Firefox) | Photos, Music & Videos |
 | Categories (Android) | Photos, Music & Videos |
-| Homepage | https://github.com/FelipheMP/show-video-controls-firefox |
-| Support site | https://github.com/FelipheMP/show-video-controls-firefox/issues |
+| Homepage | https://github.com/FelipheMP/auto-on-video-controls |
+| Support site | https://github.com/FelipheMP/auto-on-video-controls/issues |
 | License | GNU General Public License v3.0 (GPL-3.0-only) |
-| Privacy policy | https://github.com/FelipheMP/show-video-controls-firefox/blob/master/PRIVACY.md |
+| Privacy policy | https://github.com/FelipheMP/auto-on-video-controls/blob/master/PRIVACY.md |
 | Tags | `video`, `controls`, `html5`, `webm`, `media`, `player` |
 | Contributions (support) | https://github.com/sponsors/FelipheMP |
 
@@ -68,7 +68,7 @@ Agora usa o Manifest V3, sem mudança no comportamento. Novo ícone. Também inc
 
 Written in English because the review team reads it.
 
-> There is no build step, minification or bundling: the submitted package is the plain source in https://github.com/FelipheMP/show-video-controls-firefox, so no separate source archive is attached.
+> There is no build step, minification or bundling: the submitted package is the plain source in https://github.com/FelipheMP/auto-on-video-controls, so no separate source archive is attached.
 >
 > The content script (`showvideocontrolsbydefault.js`) is registered for `<all_urls>` and `host_permissions` is `<all_urls>`, because Manifest V3 on Firefox needs the host permission for a content script to run. The script only reads the page's host name, the saved site lists and `<video>` elements, and it turns on the native `controls` attribute. The extension makes no network requests and declares `data_collection_permissions: none`.
 >

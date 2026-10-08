@@ -33,7 +33,7 @@ have their own privacy policies.
 ## Changes and contact
 
 If this policy changes, the new version is published in this file with a new date.
-Questions: [open an issue](https://github.com/FelipheMP/show-video-controls-firefox/issues).
+Questions: [open an issue](https://github.com/FelipheMP/auto-on-video-controls/issues).
 
 ---
 
@@ -71,4 +71,4 @@ os seleciona, e esses sites têm as próprias políticas de privacidade.
 ## Alterações e contato
 
 Se esta política mudar, a nova versão será publicada neste arquivo com uma nova data.
-Dúvidas: [abra uma issue](https://github.com/FelipheMP/show-video-controls-firefox/issues).
+Dúvidas: [abra uma issue](https://github.com/FelipheMP/auto-on-video-controls/issues).

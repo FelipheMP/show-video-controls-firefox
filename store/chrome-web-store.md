@@ -5,7 +5,7 @@
 > published on the Chrome Web Store later, which requires a one-time developer fee.
 
 Package: build with `node scripts/build-chromium.mjs`, then zip the **contents** of
-`dist/chromium/` (the CI also attaches this zip to every GitHub release).
+`dist/chromium/` (the release workflow also attaches this zip to every GitHub release).
 The same package is used for Edge. See [edge-addons.md](edge-addons.md).
 
 The listing is edited in the [Developer Dashboard](https://chrome.google.com/webstore/devconsole).
@@ -18,8 +18,8 @@ Fields marked *(from manifest)* are filled in automatically from `_locales/`.
 | Default language | English |
 | Additional language | Portuguese (Brazil) |
 | Category | Productivity |
-| Homepage URL | https://github.com/FelipheMP/show-video-controls-firefox |
-| Support URL | https://github.com/FelipheMP/show-video-controls-firefox/issues |
+| Homepage URL | https://github.com/FelipheMP/auto-on-video-controls |
+| Support URL | https://github.com/FelipheMP/auto-on-video-controls/issues |
 
 ### English
 
@@ -75,7 +75,7 @@ The text fields in this tab are reviewed by Google staff, so they are in English
 
 **Data usage**: select none of the data types. Check all three certifications (no sale of data, no use unrelated to the single purpose, no use for creditworthiness or lending).
 
-**Privacy policy URL**: https://github.com/FelipheMP/show-video-controls-firefox/blob/master/PRIVACY.md
+**Privacy policy URL**: https://github.com/FelipheMP/auto-on-video-controls/blob/master/PRIVACY.md
 
 ## Test instructions (Distribution tab)
 

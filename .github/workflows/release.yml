@@ -1,5 +1,12 @@
 name: Build and Release Extension
 
+# Releases both packages from one source tree whenever the version in manifest.json
+# changes on master:
+#   - Firefox package: linted, built and submitted to Firefox Add-ons (AMO).
+#   - Chromium package: built from the same source and attached to the GitHub
+#     release; then published to Microsoft Edge Add-ons by the publish-edge job.
+# A version that already has a tag is skipped, so re-running is safe.
+
 on:
   push:
     branches:
@@ -15,6 +22,10 @@ jobs:
   release:
     runs-on: ubuntu-24.04
     environment: "Firefox Add-ons APIs"
+    outputs:
+      # "true" only when this run created a new release (used by publish-edge).
+      released: ${{ steps.tag_check.outputs.exists == 'false' }}
+      version: ${{ steps.version.outputs.version }}
 
     steps:
       - name: Checkout repository
@@ -42,6 +53,8 @@ jobs:
             echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
+      # ----- Firefox -----
+
       - name: Install web-ext
         if: steps.tag_check.outputs.exists == 'false'
         run: npm install --global web-ext
@@ -50,29 +63,16 @@ jobs:
         if: steps.tag_check.outputs.exists == 'false'
         run: web-ext lint
 
-      - name: Build extension
+      - name: Build Firefox package
         if: steps.tag_check.outputs.exists == 'false'
         run: |
           web-ext build \
             --overwrite-dest \
-            --artifacts-dir web-ext-artifacts
+            --artifacts-dir web-ext-artifacts \
+            --filename "auto-on-video-controls-firefox-${{ steps.version.outputs.version }}.zip"
 
-      - name: Find generated ZIP
-        if: steps.tag_check.outputs.exists == 'false'
-        id: artifact
-        shell: bash
-        run: |
-          FILE=$(find web-ext-artifacts -maxdepth 1 -type f -name "*.zip" | head -n 1)
+      # ----- Chromium (Edge, Chrome) -----
 
-          if [ -z "$FILE" ]; then
-            echo "No ZIP file generated."
-            exit 1
-          fi
-
-          echo "file=$FILE" >> "$GITHUB_OUTPUT"
-
-      # The Chromium package (Chrome, Edge) is attached to the GitHub release so
-      # it can be uploaded to those stores. Uploading stays a manual, reviewed step.
       - name: Build Chromium package
         if: steps.tag_check.outputs.exists == 'false'
         shell: bash
@@ -80,11 +80,20 @@ jobs:
           node scripts/build-chromium.mjs
 
           mkdir -p web-ext-artifacts
-          CHROMIUM_ZIP="web-ext-artifacts/show-video-controls-chromium-${{ steps.version.outputs.version }}.zip"
+          CHROMIUM_ZIP="web-ext-artifacts/auto-on-video-controls-chromium-${{ steps.version.outputs.version }}.zip"
           (cd dist/chromium && zip -r -X "$GITHUB_WORKSPACE/$CHROMIUM_ZIP" .)
 
-          echo "chromium_file=$CHROMIUM_ZIP" >> "$GITHUB_OUTPUT"
-        id: chromium
+      # Handed to the publish-edge job. Kept for a few days only: the release also holds it.
+      - name: Keep Chromium package for the Edge job
+        if: steps.tag_check.outputs.exists == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: chromium-package
+          path: web-ext-artifacts/auto-on-video-controls-chromium-${{ steps.version.outputs.version }}.zip
+          if-no-files-found: error
+          retention-days: 7
+
+      # ----- Publish and release -----
 
       - name: Submit to Firefox Add-ons
         if: steps.tag_check.outputs.exists == 'false'
@@ -115,9 +124,44 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          gh release create "${{ steps.version.outputs.tag }}" \
-            "${{ steps.artifact.outputs.file }}" \
-            "${{ steps.chromium.outputs.chromium_file }}" \
+          VERSION="${{ steps.version.outputs.version }}"
+          gh release create "v$VERSION" \
+            "web-ext-artifacts/auto-on-video-controls-firefox-$VERSION.zip" \
+            "web-ext-artifacts/auto-on-video-controls-chromium-$VERSION.zip" \
             --verify-tag \
-            --title "${{ steps.version.outputs.tag }}" \
+            --title "v$VERSION" \
             --generate-notes
+
+  # Publishes the Chromium package to Microsoft Edge Add-ons. It runs only after the
+  # release job created a new release, and only when the repository variable
+  # EDGE_PRODUCT_ID is set (Settings > Secrets and variables > Actions > Variables),
+  # so the workflow still works before Edge publishing is configured.
+  # Credentials live in the "Edge Add-ons APIs" environment: see store/README.md.
+  publish-edge:
+    needs: release
+    if: needs.release.outputs.released == 'true' && vars.EDGE_PRODUCT_ID != ''
+    runs-on: ubuntu-24.04
+    environment: "Edge Add-ons APIs"
+    permissions:
+      contents: read
+
+    steps:
+      # Only the script is needed, not the whole history.
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Download Chromium package
+        uses: actions/download-artifact@v4
+        with:
+          name: chromium-package
+          path: chromium-package
+
+      - name: Upload and publish on Edge Add-ons
+        env:
+          EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
+          EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
+          EDGE_PRODUCT_ID: ${{ vars.EDGE_PRODUCT_ID }}
+        run: |
+          node scripts/publish-edge.mjs \
+            "chromium-package/auto-on-video-controls-chromium-${{ needs.release.outputs.version }}.zip" \
+            --notes "Automated release v${{ needs.release.outputs.version }} from ${{ github.server_url }}/${{ github.repository }}/releases/tag/v${{ needs.release.outputs.version }}. No change to permissions or data handling."

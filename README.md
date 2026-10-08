@@ -1,10 +1,10 @@
-# Show Video Controls
+# Auto-On Video Controls
 
-[![Release](https://github.com/FelipheMP/show-video-controls-firefox/actions/workflows/release.yml/badge.svg)](https://github.com/FelipheMP/show-video-controls-firefox/actions/workflows/release.yml)
+[![Release](https://github.com/FelipheMP/auto-on-video-controls/actions/workflows/release.yml/badge.svg)](https://github.com/FelipheMP/auto-on-video-controls/actions/workflows/release.yml)
 
 **Stop hunting for video controls. Start watching your way.**
 
-A video starts playing, but its playback controls are missing. Show Video Controls
+A video starts playing, but its playback controls are missing. Auto-On Video Controls
 automatically enables native controls on supported HTML videos so you
 can pause, seek, adjust the volume, or enter fullscreen when the player and platform
 support it.
@@ -12,8 +12,9 @@ support it.
 Especially useful for WebM clips and sites such as 9GAG. No repeated right-clicks
 or “Show controls” steps for each video.
 
-**[Get it on Firefox Add-ons](https://addons.mozilla.org/firefox/addon/show-video-controls-firefox/)**
-· [Report a bug](https://github.com/FelipheMP/show-video-controls-firefox/issues/new?template=bug_report.md)
+**[Get it on Firefox Add-ons](https://addons.mozilla.org/firefox/addon/auto-on-video-controls/)**
+· **[Get it on Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/konenpojbbpaghcelhkempoeamohjgjd)**
+· [Report a bug](https://github.com/FelipheMP/auto-on-video-controls/issues/new?template=bug_report.md)
 · **[Support on GitHub Sponsors](https://github.com/sponsors/FelipheMP)**
 · [Ko-fi](https://ko-fi.com/coreboolean)
 
@@ -47,12 +48,13 @@ or “Show controls” steps for each video.
 
 ## Get started
 
-1. Install the add-on from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/show-video-controls-firefox/).
-   For Chrome or Edge, use the Chromium package (see [Run it in Chrome or Edge](#run-it-in-chrome-or-edge)).
-   From the next release on, the GitHub release also includes it as a zip.
+1. Install the extension from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/auto-on-video-controls/)
+   or from [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/konenpojbbpaghcelhkempoeamohjgjd).
+   Other Chromium browsers can use the zip attached to each GitHub release
+   (see [Run it in Chrome or Edge](#run-it-in-chrome-or-edge) to build it yourself).
 2. Visit a page with a supported HTML video. Native controls are enabled automatically
    unless the site is excluded.
-3. Open **Show Video Controls** from the browser's extensions menu to customize where it runs.
+3. Open **Auto-On Video Controls** from the browser's extensions menu to customize where it runs.
 
 The current source requires **Firefox 140 or later on desktop** and **Firefox 142
 or later on Android**, as declared in [manifest.json](manifest.json). The Chromium package requires
@@ -121,7 +123,7 @@ It does not replace a website's player or add a new playback engine.
   the video, and the surrounding player.
 
 See [manifest.json](manifest.json) for the complete URL exclusions. If controls
-are missing on another site, [report the issue](https://github.com/FelipheMP/show-video-controls-firefox/issues/new?template=bug_report.md)
+are missing on another site, [report the issue](https://github.com/FelipheMP/auto-on-video-controls/issues/new?template=bug_report.md)
 with the page URL, browser and version, platform, and steps to reproduce it.
 
 ## Permissions and privacy
@@ -140,8 +142,8 @@ declare it, because Chromium does not require it.
 
 The add-on code does not send browsing activity or settings to an analytics
 service. The manifest declares that no data collection is required. The optional
-support and review links open GitHub Sponsors, Ko-fi, and Firefox Add-ons in a new tab
-(the Chromium package has no review link until a store page exists). See the full
+support and review links open GitHub Sponsors, Ko-fi, and the store page (Firefox Add-ons
+or Microsoft Edge Add-ons, depending on the package) in a new tab. See the full
 [privacy policy](PRIVACY.md).
 
 ## Help this project grow
@@ -151,12 +153,12 @@ If this add-on makes your browsing easier, there are two ways to help:
 - **[Support the project on GitHub Sponsors](https://github.com/sponsors/FelipheMP)**,
   the preferred way to contribute to its continued development.
   You can also [contribute through Ko-fi](https://ko-fi.com/coreboolean).
-- **[Rate it on Firefox Add-ons](https://addons.mozilla.org/firefox/addon/show-video-controls-firefox/)**
-  and share your experience with other Firefox users.
+- **Rate it** on [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/auto-on-video-controls/)
+  or [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/konenpojbbpaghcelhkempoeamohjgjd) and share your experience with other users.
 
 Bug reports and feature ideas are welcome too:
-[report a bug](https://github.com/FelipheMP/show-video-controls-firefox/issues/new?template=bug_report.md)
-or [suggest an improvement](https://github.com/FelipheMP/show-video-controls-firefox/issues/new?template=feature_request.md).
+[report a bug](https://github.com/FelipheMP/auto-on-video-controls/issues/new?template=bug_report.md)
+or [suggest an improvement](https://github.com/FelipheMP/auto-on-video-controls/issues/new?template=feature_request.md).
 
 ## Develop and contribute
 
@@ -190,6 +192,8 @@ from the Firefox source in a few documented ways, listed at the top of the scrip
 | [manifest.json](manifest.json) | Firefox requirements, permissions, and script registration (Manifest V3). |
 | [_locales](_locales) | Extension name and summary in English and Brazilian Portuguese. |
 | [scripts/build-chromium.mjs](scripts/build-chromium.mjs) | Builds the Chrome and Edge package into `dist/chromium/`. |
+| [scripts/publish-edge.mjs](scripts/publish-edge.mjs) | Uploads and publishes the Chromium zip on Microsoft Edge Add-ons (used by the release workflow). |
+| [.github/workflows/release.yml](.github/workflows/release.yml) | Builds both packages, submits Firefox, creates the GitHub release and publishes Edge. |
 | [web-ext-config.cjs](web-ext-config.cjs) | Keeps non-add-on files out of the Firefox package. |
 | [store](store) | Store listing texts (Chrome, Edge, Firefox) in English and Brazilian Portuguese. |
 | [PRIVACY.md](PRIVACY.md) | Privacy policy linked from the stores. |
@@ -224,7 +228,7 @@ DOM callbacks, and no work on nodes that were not added.
   It checks the Firefox package only; the Chromium package is checked by loading it.
 
 For an additional code overview,
-[explore the project on DeepWiki](https://deepwiki.com/FelipheMP/show-video-controls-firefox).
+[explore the project on DeepWiki](https://deepwiki.com/FelipheMP/auto-on-video-controls).
 
 ## Credits and license
 
