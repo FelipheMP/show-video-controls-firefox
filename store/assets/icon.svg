@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+	<!-- Original icon: a video with its control bar turned on.
+	     Purple tile (the popup's accent color), a white play triangle, and a white
+	     control bar with a mini play button, a progress track and a knob. -->
+	<rect x="4" y="4" width="120" height="120" rx="28" fill="#5145cd"/>
+	<path d="M51 26v44l37-22z" fill="#ffffff" stroke="#ffffff" stroke-width="6" stroke-linejoin="round"/>
+	<rect x="18" y="84" width="92" height="24" rx="12" fill="#ffffff"/>
+	<path d="M32 90v12l10-6z" fill="#5145cd" stroke="#5145cd" stroke-width="2" stroke-linejoin="round"/>
+	<rect x="54" y="94" width="48" height="4" rx="2" fill="#5145cd" opacity="0.35"/>
+	<rect x="54" y="94" width="28" height="4" rx="2" fill="#5145cd"/>
+	<circle cx="82" cy="96" r="6" fill="#5145cd"/>
+</svg>

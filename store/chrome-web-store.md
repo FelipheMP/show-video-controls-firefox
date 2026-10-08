@@ -23,7 +23,7 @@ Fields marked *(from manifest)* are filled in automatically from `_locales/`.
 
 ### English
 
-**Name** *(from manifest)*: Show Video Controls
+**Name** *(from manifest)*: Auto-On Video Controls
 
 **Summary** *(from manifest, 132 characters maximum)*:
 Automatically turns on the browser's native controls for HTML5 videos, so you never right-click "Show Controls" again.
@@ -36,7 +36,7 @@ Available for desktop versions of Chrome.
 
 ### Português (Brasil)
 
-**Nome** *(do manifest)*: Show Video Controls
+**Nome** *(do manifest)*: Auto-On Video Controls
 
 **Resumo** *(do manifest, máximo de 132 caracteres)*:
 Ativa automaticamente os controles nativos do navegador em vídeos HTML5, sem precisar clicar em "Mostrar controles" toda vez.

@@ -10,10 +10,12 @@
 //      declared in content_scripts, and leaving them out keeps the permission
 //      warning and the store review as small as possible.
 //   2. The extension name is replaced in every _locales/*/messages.json: the
-//      Firefox name mentions "Firefox", which Chromium stores do not accept. The
-//      Chromium name is "Show Video Controls", the same name the popup shows.
+//      Firefox name mentions "Firefox", which Chromium stores do not accept, and
+//      a store name must not be similar to another extension's (Edge policy 1.1.2).
 //   3. minimum_chrome_version is added (the page script and popup use :has()).
-//   4. The popup's "Rate extension" link, which points to Firefox Add-ons, is
+//   4. The popup's title and heading use the Chromium name (CHROMIUM_NAMES.en), so
+//      the popup matches the store page.
+//   5. The popup's "Rate extension" link, which points to Firefox Add-ons, is
 //      removed (or pointed at a Chromium store page, see CHROMIUM_RATE_URL).
 //
 // Only files in COPY_LIST are packaged. Anything else in the repository (docs,
@@ -32,9 +34,13 @@ import { fileURLToPath } from 'node:url';
 // Names shown by Chrome and Edge, per _locales folder. Chrome allows up to 75
 // characters. Every folder in _locales must have an entry (checked below).
 const CHROMIUM_NAMES = {
-	en: 'Show Video Controls',
-	pt_BR: 'Show Video Controls'
+	en: 'Auto-On Video Controls',
+	pt_BR: 'Auto-On Video Controls'
 };
+
+// The name the source popup shows as its title and heading. The Chromium popup
+// shows CHROMIUM_NAMES.en instead, so the popup matches the store listing.
+const SOURCE_POPUP_NAME = 'Show Video Controls';
 
 // Oldest Chromium that supports every CSS/JS feature the extension relies on.
 const MINIMUM_CHROME_VERSION = '105';
@@ -107,6 +113,18 @@ writeFileSync(
 			`$1${CHROMIUM_RATE_URL}$2`
 		)
 );
+
+// Popup title and heading: use the Chromium name (popup.html and popup-i18n.js).
+// Counts are checked, so a changed popup fails the build instead of shipping a stale name.
+for (const [file, expected] of [['popup.html', 2], ['popup-i18n.js', 2]]) {
+	const path = join(outDir, file);
+	const text = readFileSync(path, 'utf8');
+	const found = text.split(SOURCE_POPUP_NAME).length - 1;
+	if (found !== expected) {
+		throw new Error(`Expected ${expected} uses of "${SOURCE_POPUP_NAME}" in ${file}, found ${found}`);
+	}
+	writeFileSync(path, text.split(SOURCE_POPUP_NAME).join(CHROMIUM_NAMES.en));
+}
 
 // Manifest: drop Firefox-only keys and add the Chromium ones.
 const manifest = readJson(join(root, 'manifest.json'));
