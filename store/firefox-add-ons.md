@@ -1,7 +1,7 @@
 # Firefox Add-ons (AMO) listing
 
 Use this to update the existing listing at
-https://addons.mozilla.org/firefox/addon/show-video-controls-firefox/
+https://addons.mozilla.org/firefox/addon/auto-on-video-controls/
 (Developer Hub, **Edit Product Page**). Package: `web-ext build` from the repository root.
 
 Name and summary also come from the manifest (`_locales/`), but AMO stores its own

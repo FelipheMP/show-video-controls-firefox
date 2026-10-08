@@ -16,7 +16,7 @@ are shipped inside the extension packages.
 
 | Store | Status | Address |
 | --- | --- | --- |
-| Firefox Add-ons | Published, updated by the release workflow | https://addons.mozilla.org/firefox/addon/show-video-controls-firefox/ |
+| Firefox Add-ons | Published, updated by the release workflow | https://addons.mozilla.org/firefox/addon/auto-on-video-controls/ |
 | Microsoft Edge Add-ons | Published (first version approved), updated by the release workflow | https://microsoftedge.microsoft.com/addons/detail/konenpojbbpaghcelhkempoeamohjgjd |
 | Chrome Web Store | Not planned (one-time developer fee). The texts in [chrome-web-store.md](chrome-web-store.md) are kept ready in case that changes. | none |
 
@@ -81,7 +81,7 @@ Chromium package points it to the Edge Add-ons page: `CHROMIUM_RATE_URL` in
   for that). Keep the name and the icon distinct from the original extension's.
 - The repository is named `auto-on-video-controls` (it was `show-video-controls-firefox`), so listing links
   do not reference another browser. Old repository addresses redirect on GitHub. The Firefox Add-ons
-  address still uses its original slug, which can only be changed on that site.
+  address was renamed the same way (`.../addon/auto-on-video-controls/`).
 - Confirm the original *Show Video Controls by Default* extension's license (still open).
 - If the extension is ever published on the Chrome Web Store, a one-time developer fee applies.
 - Confirm the image sizes and field limits below in each dashboard, since stores change them.

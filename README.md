@@ -12,7 +12,7 @@ support it.
 Especially useful for WebM clips and sites such as 9GAG. No repeated right-clicks
 or “Show controls” steps for each video.
 
-**[Get it on Firefox Add-ons](https://addons.mozilla.org/firefox/addon/show-video-controls-firefox/)**
+**[Get it on Firefox Add-ons](https://addons.mozilla.org/firefox/addon/auto-on-video-controls/)**
 · **[Get it on Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/konenpojbbpaghcelhkempoeamohjgjd)**
 · [Report a bug](https://github.com/FelipheMP/auto-on-video-controls/issues/new?template=bug_report.md)
 · **[Support on GitHub Sponsors](https://github.com/sponsors/FelipheMP)**
@@ -48,7 +48,7 @@ or “Show controls” steps for each video.
 
 ## Get started
 
-1. Install the extension from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/show-video-controls-firefox/)
+1. Install the extension from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/auto-on-video-controls/)
    or from [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/konenpojbbpaghcelhkempoeamohjgjd).
    Other Chromium browsers can use the zip attached to each GitHub release
    (see [Run it in Chrome or Edge](#run-it-in-chrome-or-edge) to build it yourself).
@@ -153,7 +153,7 @@ If this add-on makes your browsing easier, there are two ways to help:
 - **[Support the project on GitHub Sponsors](https://github.com/sponsors/FelipheMP)**,
   the preferred way to contribute to its continued development.
   You can also [contribute through Ko-fi](https://ko-fi.com/coreboolean).
-- **Rate it** on [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/show-video-controls-firefox/)
+- **Rate it** on [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/auto-on-video-controls/)
   or [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/konenpojbbpaghcelhkempoeamohjgjd) and share your experience with other users.
 
 Bug reports and feature ideas are welcome too:
