@@ -19,7 +19,7 @@ Name and short description come from the package (`_locales/`), so they match Ch
 
 ### English (United States)
 
-**Name** *(from the package)*: Show Video Controls
+**Name** *(from the package)*: Auto-On Video Controls
 
 **Description**: paste [description.en.md](description.en.md), then add this line at the end:
 
@@ -41,7 +41,7 @@ video settings
 
 ### Português (Brasil)
 
-**Nome** *(do pacote)*: Show Video Controls
+**Nome** *(do pacote)*: Auto-On Video Controls
 
 **Descrição**: cole o conteúdo de [description.pt-BR.md](description.pt-BR.md) e acrescente esta linha no final:
 
@@ -72,7 +72,10 @@ Written in English because the certification team reads it.
 > Then click the toolbar icon: the domain `example.com` is prefilled. Select "Add site" and the controls disappear from the open page, because the site is now excluded. Select "Remove" and they return.
 >
 > The extension makes no network requests, collects no data and stores only its settings locally. Permissions: `storage` (settings), `activeTab` (prefill the current domain in the popup) and a content script on all sites, needed to find video elements. The source is plain JavaScript with no build step: https://github.com/FelipheMP/show-video-controls-firefox
+>
+> A much older version of this extension was rejected under policy 1.1.2 (similarity to another product). This version uses a different name and an original icon, and adds what the listing of the product it is based on does not describe: per-site allow and block lists with two modes, settings that apply to open pages without a reload, a design that does no work on sites where it is turned off, small fixes for overlays on 9GAG and Instagram, light and dark themes, and an English and Brazilian Portuguese interface. It is open source (GPLv3), and its description credits the original author.
 
 ## Images
 
-See [README.md](README.md#images). Edge requires a 300 x 300 logo in addition to the screenshots.
+See [README.md](README.md#images). Edge requires a 300 x 300 logo in addition to the screenshots;
+it is ready in [assets/logo-300.png](assets/logo-300.png).

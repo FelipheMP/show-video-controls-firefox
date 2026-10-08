@@ -39,7 +39,7 @@ Works on Firefox for desktop and for Android.
 **Version notes** (for the release that ships Manifest V3):
 
 ```
-Now built on Manifest V3, with no change in behavior. Also adds localized store information in English and Brazilian Portuguese.
+Now built on Manifest V3, with no change in behavior. New icon. Also adds localized store information in English and Brazilian Portuguese.
 ```
 
 ## Português (Brasil)
@@ -61,7 +61,7 @@ Funciona no Firefox para computador e para Android.
 **Notas da versão** (para a versão que traz o Manifest V3):
 
 ```
-Agora usa o Manifest V3, sem mudança no comportamento. Também inclui as informações da loja em inglês e português do Brasil.
+Agora usa o Manifest V3, sem mudança no comportamento. Novo ícone. Também inclui as informações da loja em inglês e português do Brasil.
 ```
 
 ## Notes to reviewer
