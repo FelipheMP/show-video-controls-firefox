@@ -1,6 +1,6 @@
 {
 	"extName": {
-		"message": "Show Video Controls by Default for Firefox",
+		"message": "Auto-On Video Controls",
 		"description": "Nome da extensão na página do Firefox Add-ons. O build para Chromium o substitui (veja scripts/build-chromium.mjs)."
 	},
 	"extDescription": {

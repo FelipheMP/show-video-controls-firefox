@@ -22,7 +22,7 @@ copy of each, so update them in the Developer Hub as well.
 
 ## English (US)
 
-**Name**: Show Video Controls by Default for Firefox
+**Name**: Auto-On Video Controls
 
 **Summary** (250 characters maximum):
 
@@ -44,7 +44,7 @@ Now built on Manifest V3, with no change in behavior. New icon. Also adds locali
 
 ## Português (Brasil)
 
-**Nome**: Show Video Controls by Default for Firefox
+**Nome**: Auto-On Video Controls
 
 **Resumo** (máximo de 250 caracteres):
 

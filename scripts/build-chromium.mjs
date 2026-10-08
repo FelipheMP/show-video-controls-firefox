@@ -9,13 +9,8 @@
 //      host_permissions). Chromium does not need host_permissions for scripts
 //      declared in content_scripts, and leaving them out keeps the permission
 //      warning and the store review as small as possible.
-//   2. The extension name is replaced in every _locales/*/messages.json: the
-//      Firefox name mentions "Firefox", which Chromium stores do not accept, and
-//      a store name must not be similar to another extension's (Edge policy 1.1.2).
-//   3. minimum_chrome_version is added (the page script and popup use :has()).
-//   4. The popup's title and heading use the Chromium name (CHROMIUM_NAMES.en), so
-//      the popup matches the store page.
-//   5. The popup's "Rate extension" link, which points to Firefox Add-ons, is
+//   2. minimum_chrome_version is added (the page script and popup use :has()).
+//   3. The popup's "Rate extension" link, which points to Firefox Add-ons, is
 //      removed (or pointed at a Chromium store page, see CHROMIUM_RATE_URL).
 //
 // Only files in COPY_LIST are packaged. Anything else in the repository (docs,
@@ -31,16 +26,8 @@ import { fileURLToPath } from 'node:url';
 
 // ---------- Configuration (edit here) ----------
 
-// Names shown by Chrome and Edge, per _locales folder. Chrome allows up to 75
-// characters. Every folder in _locales must have an entry (checked below).
-const CHROMIUM_NAMES = {
-	en: 'Auto-On Video Controls',
-	pt_BR: 'Auto-On Video Controls'
-};
-
-// The name the source popup shows as its title and heading. The Chromium popup
-// shows CHROMIUM_NAMES.en instead, so the popup matches the store listing.
-const SOURCE_POPUP_NAME = 'Show Video Controls';
+// Chrome and Edge allow extension names up to 75 characters (checked below).
+const MAX_NAME_LENGTH = 75;
 
 // Oldest Chromium that supports every CSS/JS feature the extension relies on.
 const MINIMUM_CHROME_VERSION = '105';
@@ -65,6 +52,7 @@ const COPY_LIST = [
 	'showvideocontrolsbydefault.js',
 	'css',
 	'icons',
+	'_locales',
 	'LICENSE'
 ];
 
@@ -114,18 +102,6 @@ writeFileSync(
 		)
 );
 
-// Popup title and heading: use the Chromium name (popup.html and popup-i18n.js).
-// Counts are checked, so a changed popup fails the build instead of shipping a stale name.
-for (const [file, expected] of [['popup.html', 2], ['popup-i18n.js', 2]]) {
-	const path = join(outDir, file);
-	const text = readFileSync(path, 'utf8');
-	const found = text.split(SOURCE_POPUP_NAME).length - 1;
-	if (found !== expected) {
-		throw new Error(`Expected ${expected} uses of "${SOURCE_POPUP_NAME}" in ${file}, found ${found}`);
-	}
-	writeFileSync(path, text.split(SOURCE_POPUP_NAME).join(CHROMIUM_NAMES.en));
-}
-
 // Manifest: drop Firefox-only keys and add the Chromium ones.
 const manifest = readJson(join(root, 'manifest.json'));
 for (const key of FIREFOX_ONLY_KEYS) {
@@ -134,20 +110,14 @@ for (const key of FIREFOX_ONLY_KEYS) {
 manifest.minimum_chrome_version = MINIMUM_CHROME_VERSION;
 writeJson(join(outDir, 'manifest.json'), manifest);
 
-// Translations: copy each locale and swap in the Chromium name.
+// Names: the source names are used as is (one name for every browser). Fail the
+// build if one is too long for the Chromium stores.
 const localesDir = join(root, '_locales');
 for (const locale of readdirSync(localesDir)) {
-	const name = CHROMIUM_NAMES[locale];
-	if (!name) {
-		throw new Error(`No Chromium name configured for locale "${locale}"`);
+	const { extName } = readJson(join(localesDir, locale, 'messages.json'));
+	if (extName.message.length > MAX_NAME_LENGTH) {
+		throw new Error(`Extension name for "${locale}" is longer than ${MAX_NAME_LENGTH} characters`);
 	}
-	if (name.length > 75) {
-		throw new Error(`Chromium name for "${locale}" is longer than 75 characters`);
-	}
-	const messages = readJson(join(localesDir, locale, 'messages.json'));
-	messages.extName.message = name;
-	mkdirSync(join(outDir, '_locales', locale), { recursive: true });
-	writeJson(join(outDir, '_locales', locale, 'messages.json'), messages);
 }
 
 console.log(`Chromium package ready in ${outDir}`);
