@@ -72,7 +72,8 @@ The icon is an original design. Its source is [`assets/icon.svg`](assets/icon.sv
 Ready-made screenshots (1280 x 800, same for Edge and Firefox) are in [`screenshots/`](screenshots):
 `store-en-1/2.png` (English) and `store-pt-BR-1/2.png` (Brazilian Portuguese), light and dark theme.
 They are captures of the real popup, including the "Rate extension" link, placed on a captioned canvas.
-Retake them whenever the popup changes.
+`store-640x480-*.png` are the same four in 640 x 480. Promo tiles are in [`promo/`](promo): `small-440x280-*.png`
+and `marquee-1400x560-*.png`, English and Brazilian Portuguese. Retake them whenever the popup changes.
 
 Suggested screenshots, in order: the popup in the light theme, the popup in the dark theme,
 and a page with a video showing the native controls. [`docs/images`](../docs/images) already
