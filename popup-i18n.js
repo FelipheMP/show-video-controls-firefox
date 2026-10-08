@@ -2,7 +2,7 @@
 // English is the default, regardless of the browser or operating-system locale.
 const popupTranslations = {
 	en: {
-		pageTitle: 'Show Video Controls — Settings',
+		pageTitle: 'Auto-On Video Controls — Settings',
 		subtitle: 'Video controls, by default.',
 		language: 'Language',
 		theme: 'Theme',
@@ -44,7 +44,7 @@ const popupTranslations = {
 		loadError: 'Could not load your settings. Close and reopen this popup to try again.'
 	},
 	'pt-BR': {
-		pageTitle: 'Show Video Controls — Configurações',
+		pageTitle: 'Auto-On Video Controls — Configurações',
 		subtitle: 'Controles de vídeo, por padrão.',
 		language: 'Idioma',
 		theme: 'Tema',

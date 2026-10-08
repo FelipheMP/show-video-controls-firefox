@@ -75,15 +75,12 @@ body {
 	padding: 20px 18px 12px;
 }
 
+/* The icon image carries its own rounded tile and colors, so it needs no theme styling. */
 .app-logo {
-	display: grid;
-	place-items: center;
 	flex-shrink: 0;
 	width: 38px;
 	height: 38px;
-	border-radius: 12px;
-	background-color: var(--accent-surface-color);
-	color: var(--accent-color);
+	border-radius: 10px;
 }
 
 h1 {

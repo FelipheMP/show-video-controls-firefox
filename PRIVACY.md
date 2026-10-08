@@ -2,7 +2,7 @@
 
 *Last updated: October 6, 2026*
 
-Applies to the browser extension published as **Show Video Controls by Default for Firefox**
+Applies to the browser extension published as **Auto-On Video Controls**
 on Firefox Add-ons and as **Auto-On Video Controls** on the Chrome Web Store and
 Microsoft Edge Add-ons. [Leia em português (Brasil)](#política-de-privacidade).
 
@@ -41,7 +41,7 @@ Questions: [open an issue](https://github.com/FelipheMP/show-video-controls-fire
 
 *Última atualização: 6 de outubro de 2026*
 
-Vale para a extensão publicada como **Show Video Controls by Default for Firefox** no Firefox
+Vale para a extensão publicada como **Auto-On Video Controls** no Firefox
 Add-ons e como **Auto-On Video Controls** na Chrome Web Store e no Microsoft Edge Add-ons.
 
 ## Resumo
