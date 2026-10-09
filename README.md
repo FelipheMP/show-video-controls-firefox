@@ -42,8 +42,7 @@ or “Show controls” steps for each video.
 ## A cleaner way to manage your controls
 
 <p>
-  <img src="docs/images/popup-light.png" alt="Light theme: language and theme selectors, site rules, and support and review links" width="320" />
-  <img src="docs/images/popup-dark.png" alt="Dark theme showing the same settings and contribution options" width="320" />
+  <img src="store/promo/marquee-1400x560-en.png" alt="Overview of extension's UI, themes and language selector" width="1400" />
 </p>
 
 ## Get started
